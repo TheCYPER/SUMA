@@ -15,7 +15,7 @@ SUMA is a modern, AI-powered Learning Management System built with FastAPI and O
 - **📝 Task Management**: Assignments, tests, labs, projects, and quizzes
 - **📁 File Upload/Download**: Support for various file types with preview capabilities
 - **📅 Calendar Integration**: Weekly calendar view with .ics export
-- **🤖 AI Assistant**: Local AI-powered help using Ollama
+- **🤖 AI Assistant**: Multi-agent AI system with responsible educational guidance
 - **📊 Dashboard**: Personalized dashboard with stats and upcoming tasks
 
 ### 🚀 Advanced Features
@@ -148,10 +148,7 @@ After running `init_db.py`, you'll have these test accounts:
 ### Run API Tests
 ```bash
 # Test all functionality
-python test_api_complete.py
-
-# Test Ollama connection
-python test_ollama.py
+python test_ai_system.py
 
 # Test specific API endpoints
 python test_api.py
@@ -195,7 +192,7 @@ Suma/
 ├── env.example          # Environment variables template
 ├── init_db.py           # Database initialization
 ├── test_*.py            # Test scripts
-├── OLLAMA_SETUP.md      # Ollama setup guide
+├── AI_USAGE_GUIDE.md    # AI usage guide
 ├── QUICKSTART.md        # Quick start guide
 └── README.md            # This file
 ```
@@ -287,7 +284,7 @@ If you encounter any issues or have questions:
 1. Check the [API documentation](http://localhost:8000/docs)
 2. Review the [Issues](https://github.com/your-username/suma-lms/issues) page
 3. Create a new issue with detailed information
-4. Check [OLLAMA_SETUP.md](OLLAMA_SETUP.md) for AI setup help
+4. Check [AI_USAGE_GUIDE.md](AI_USAGE_GUIDE.md) for AI usage help
 
 ## 🔮 Roadmap
 

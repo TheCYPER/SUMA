@@ -1,19 +1,30 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+"""
+SUMA LMS AI路由 - 多智能体系统
+提供负责任的教育性AI交互
+"""
+
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.auth import get_current_active_user
-from app.schemas import AIQuery, AIResponse
+from app.schemas import AIQuery, AIResponse, User
 from app.crud import get_upcoming_tasks, get_user_courses, get_dashboard_stats
 from app.models import User
 from app.config import settings
+from app.ai_agents import AgentManager, AgentRole, UserContext
+from app.ai_guardrails import guardrail_system
 import ollama
 import requests
 import json
+from datetime import datetime
 
 router = APIRouter(prefix="/ai", tags=["AI助手"])
 
-# Test Ollama connection
+# 初始化智能体管理器
+agent_manager = AgentManager()
+
+
 def test_ollama_connection() -> bool:
     """测试Ollama是否正在运行且可访问"""
     try:
@@ -23,137 +34,140 @@ def test_ollama_connection() -> bool:
         return False
 
 
-async def get_ai_response(query: str, context: str = "", user_id: int = None, db: Session = None) -> AIResponse:
-    """使用Ollama获取用户查询的AI响应"""
+def build_user_context(user: User, course_id: Optional[int] = None, 
+                      task_id: Optional[int] = None, db: Session = None) -> UserContext:
+    """构建用户上下文信息"""
+    # 获取用户最近的学习主题
+    recent_topics = []
+    if db:
+        try:
+            upcoming_tasks = get_upcoming_tasks(db, user.id, 30)
+            recent_topics = list(set([task.course.name for task in upcoming_tasks[:5]]))
+        except:
+            pass
     
-    # Check if Ollama is running
-    if not test_ollama_connection():
-        return AIResponse(
-            response="AI Assistant is not available. Please make sure Ollama is running on your system.\n\nTo start Ollama:\n1. Install Ollama from https://ollama.ai\n2. Run: ollama serve\n3. Pull a model: ollama pull llama3.2",
-            suggestions=["Install Ollama", "Start Ollama service", "Pull a model"]
-        )
+    # 根据用户角色确定学习水平
+    learning_level = "beginner"
+    if user.role.value == "teacher":
+        learning_level = "advanced"
+    elif user.role.value == "admin":
+        learning_level = "expert"
     
-    try:
-        # Prepare context based on query type
-        system_prompt = """You are SUMA, an AI assistant for a Learning Management System (LMS). 
-        You help students with their academic tasks, course information, and study planning.
-        Be helpful, concise, and encouraging in your responses. Respond in Chinese when appropriate."""
-        
-        # Add relevant context based on the query
-        if "task" in query.lower() or "assignment" in query.lower() or "deadline" in query.lower():
-            if db and user_id:
-                upcoming_tasks = get_upcoming_tasks(db, user_id, 14)
-                if upcoming_tasks:
-                    task_context = "\n".join([
-                        f"- {task.title} (Due: {task.due_date.strftime('%Y-%m-%d')}) - {task.course.name}"
-                        for task in upcoming_tasks[:5]
-                    ])
-                    context += f"\n\nUpcoming tasks:\n{task_context}"
-        
-        if "course" in query.lower() or "class" in query.lower():
-            if db and user_id:
-                courses = get_user_courses(db, user_id)
-                if courses:
-                    course_context = "\n".join([
-                        f"- {course.name} ({course.code})"
-                        for course in courses
-                    ])
-                    context += f"\n\nEnrolled courses:\n{course_context}"
-        
-        # Prepare the full prompt for Ollama
-        full_prompt = f"{system_prompt}\n\nContext: {context}\n\nUser Query: {query}"
-        
-        # Call Ollama API
-        client = ollama.Client(host=settings.ollama_base_url)
-        response = client.chat(
-            model=settings.ollama_model,
-            messages=[
-                {
-                    'role': 'user',
-                    'content': full_prompt
-                }
-            ],
-            options={
-                'temperature': 0.7,
-                'num_predict': 500
-            }
-        )
-        
-        ai_response = response['message']['content']
-        
-        # Generate suggestions based on the query
-        suggestions = generate_suggestions(query, ai_response)
-        
-        return AIResponse(
-            response=ai_response,
-            suggestions=suggestions
-        )
-        
-    except Exception as e:
-        return AIResponse(
-            response=f"抱歉，我遇到了一个错误: {str(e)}\n\n请确保:\n1. Ollama服务正在运行\n2. 模型 {settings.ollama_model} 已下载\n3. 网络连接正常",
-            suggestions=["检查Ollama服务", "下载模型", "重试请求"]
-        )
-
-
-def generate_suggestions(query: str, response: str) -> List[str]:
-    """根据查询和响应生成有用的建议"""
-    suggestions = []
-    
-    query_lower = query.lower()
-    
-    if "task" in query_lower or "assignment" in query_lower or "作业" in query or "任务" in query:
-        suggestions.extend([
-            "查看所有即将到期的任务",
-            "检查任务详情",
-            "提交作业"
-        ])
-    
-    if "course" in query_lower or "class" in query_lower or "课程" in query or "班级" in query:
-        suggestions.extend([
-            "查看课程材料",
-            "检查课程安排",
-            "联系老师"
-        ])
-    
-    if "calendar" in query_lower or "schedule" in query_lower or "日历" in query or "日程" in query:
-        suggestions.extend([
-            "导出日历",
-            "查看周计划",
-            "添加新事件"
-        ])
-    
-    if "grade" in query_lower or "score" in query_lower or "成绩" in query or "分数" in query:
-        suggestions.extend([
-            "查看成绩单",
-            "检查作业反馈",
-            "跟踪学习进度"
-        ])
-    
-    # Default suggestions
-    if not suggestions:
-        suggestions.extend([
-            "询问即将到期的任务",
-            "获取课程信息",
-            "查看日历事件"
-        ])
-    
-    return suggestions[:3]  # Limit to 3 suggestions
+    return UserContext(
+        user_id=user.id,
+        course_id=course_id,
+        task_id=task_id,
+        learning_level=learning_level,
+        subject_area=None,  # 可以根据课程信息推断
+        recent_topics=recent_topics,
+        learning_goals=["提高学习效率", "掌握核心概念", "培养批判性思维"]
+    )
 
 
 @router.post("/query", response_model=AIResponse)
 async def query_ai_assistant(
     query_data: AIQuery,
+    agent_type: Optional[str] = Query(None, description="指定AI智能体类型"),
+    course_id: Optional[int] = Query(None, description="课程ID"),
+    task_id: Optional[int] = Query(None, description="任务ID"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """查询AI助手"""
-    return await get_ai_response(
-        query=query_data.query,
-        context=query_data.context or "",
-        user_id=current_user.id,
-        db=db
-    )
+    """查询AI助手 - 多智能体系统"""
+    
+    # 检查Ollama连接
+    if not test_ollama_connection():
+        return AIResponse(
+            response="AI Assistant is temporarily unavailable. Please ensure Ollama service is running.\n\nSetup steps:\n1. Install Ollama: https://ollama.ai\n2. Start service: ollama serve\n3. Pull model: ollama pull llama3.1:8b",
+            suggestions=["Check Ollama service status", "Restart Ollama", "Check network connection"]
+        )
+    
+    try:
+        # 检查查询是否合规
+        guardrail_result = guardrail_system.check_query(
+            user_id=current_user.id,
+            query=query_data.query,
+            context={"course_id": course_id, "task_id": task_id}
+        )
+        
+        # 如果查询被阻止，返回教育干预
+        if not guardrail_result["allowed"]:
+            if guardrail_result["action"] == "intervention":
+                intervention = guardrail_result["intervention"]
+                return AIResponse(
+                    response=intervention["message"],
+                    suggestions=intervention["suggestions"],
+                    learning_tips=["Responsible AI use", "Independent thinking", "Academic integrity"],
+                    agent_role="guardrail_system",
+                    timestamp=intervention["timestamp"]
+                )
+            else:
+                return AIResponse(
+                    response=guardrail_result["message"],
+                    suggestions=guardrail_result.get("suggestions", []),
+                    learning_tips=["Contact administrator", "Review usage guidelines"],
+                    agent_role="guardrail_system",
+                    timestamp=datetime.now().isoformat()
+                )
+        
+        # 构建用户上下文
+        context = build_user_context(current_user, course_id, task_id, db)
+        
+        # 选择智能体
+        preferred_agent = None
+        if agent_type:
+            try:
+                preferred_agent = AgentRole(agent_type)
+            except ValueError:
+                pass
+        
+        # 路由查询到合适的智能体
+        result = await agent_manager.route_query(
+            query=query_data.query,
+            context=context,
+            preferred_agent=preferred_agent
+        )
+        
+        return AIResponse(
+            response=result["response"],
+            suggestions=result["suggestions"],
+            learning_tips=result.get("learning_tips", []),
+            agent_role=result["agent_role"],
+            timestamp=result["timestamp"]
+        )
+        
+    except Exception as e:
+        return AIResponse(
+            response=f"Error processing your request: {str(e)}",
+            suggestions=["Please rephrase your question", "Check network connection", "Try again later"]
+        )
+
+
+@router.get("/agents")
+async def get_available_agents():
+    """获取可用的AI智能体列表"""
+    agents_info = {}
+    for role in AgentRole:
+        agents_info[role.value] = agent_manager.get_agent_info(role)
+    
+    return {
+        "agents": agents_info,
+        "total_count": len(AgentRole),
+        "description": "SUMA LMS多智能体系统，提供负责任的教育性AI交互"
+    }
+
+
+@router.get("/agents/{agent_type}")
+async def get_agent_details(agent_type: str):
+    """获取特定智能体的详细信息"""
+    try:
+        role = AgentRole(agent_type)
+        return agent_manager.get_agent_info(role)
+    except ValueError:
+        raise HTTPException(
+            status_code=404,
+            detail=f"智能体类型 '{agent_type}' 不存在"
+        )
 
 
 @router.get("/dashboard-summary", response_model=AIResponse)
@@ -162,29 +176,37 @@ async def get_dashboard_summary(
     current_user: User = Depends(get_current_active_user)
 ):
     """获取AI生成的仪表板摘要"""
-    # Get user's data
-    stats = get_dashboard_stats(db, current_user.id)
-    upcoming_tasks = get_upcoming_tasks(db, current_user.id, 7)
-    courses = get_user_courses(db, current_user.id)
     
-    # Create context
-    context = f"""
-    User: {current_user.full_name}
-    Total courses: {stats['total_courses']}
-    Active tasks: {stats['active_tasks']}
-    Upcoming deadlines: {stats['upcoming_deadlines']}
-    Attendance rate: {stats['attendance_rate']}%
+    if not test_ollama_connection():
+        return AIResponse(
+            response="AI Assistant is temporarily unavailable, cannot generate dashboard summary.",
+            suggestions=["Check Ollama service status", "Restart Ollama"]
+        )
     
-    Upcoming tasks:
-    {chr(10).join([f"- {task.title} (Due: {task.due_date.strftime('%Y-%m-%d')})" for task in upcoming_tasks[:3]])}
-    
-    Enrolled courses:
-    {chr(10).join([f"- {course.name}" for course in courses])}
-    """
-    
-    query = "请提供一个简洁、鼓励性的学术进度总结，并告诉我今天应该重点关注什么。"
-    
-    return await get_ai_response(query, context, current_user.id, db)
+    try:
+        # 获取用户数据
+        context = build_user_context(current_user, db=db)
+        
+        # 使用学习分析员智能体
+        result = await agent_manager.route_query(
+            query="请分析我的学习情况并提供个性化建议",
+            context=context,
+            preferred_agent=AgentRole.LEARNING_ANALYST
+        )
+        
+        return AIResponse(
+            response=result["response"],
+            suggestions=result["suggestions"],
+            learning_tips=result.get("learning_tips", []),
+            agent_role=result["agent_role"],
+            timestamp=result["timestamp"]
+        )
+        
+    except Exception as e:
+        return AIResponse(
+            response=f"Error generating dashboard summary: {str(e)}",
+            suggestions=["Try again later", "Check data integrity"]
+        )
 
 
 @router.post("/task-analysis", response_model=AIResponse)
@@ -195,105 +217,259 @@ async def analyze_task_file(
     current_user: User = Depends(get_current_active_user)
 ):
     """分析任务文件并提供AI洞察"""
-    from app.crud import get_task, get_task_submission
     
-    # Get task information
-    task = get_task(db, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+    if not test_ollama_connection():
+        return AIResponse(
+            response="AI Assistant is temporarily unavailable, cannot analyze task files.",
+            suggestions=["Check Ollama service status", "Restart Ollama"]
+        )
     
-    # Get user's submission
-    submission = get_task_submission(db, task_id, current_user.id)
-    
-    # Create context
-    context = f"""
-    Task: {task.title}
-    Description: {task.description or 'No description provided'}
-    Due Date: {task.due_date}
-    Max Points: {task.max_points}
-    Task Type: {task.task_type}
-    Course: {task.course.name}
-    
-    User's Submission Status: {submission.status if submission else 'Not submitted'}
-    """
-    
-    if submission and submission.content:
-        context += f"\nSubmission Content: {submission.content}"
-    
-    # Add file attachments info if available
-    if task.attachments:
-        context += f"\nAttached Files: {', '.join([att.filename for att in task.attachments])}"
-    
-    return await get_ai_response(
-        query=query_data.query,
-        context=context,
-        user_id=current_user.id,
-        db=db
-    )
+    try:
+        # 构建用户上下文
+        context = build_user_context(current_user, task_id=task_id, db=db)
+        
+        # 根据任务类型选择智能体
+        # 这里可以根据任务类型（编程、写作、数学等）选择不同的智能体
+        preferred_agent = AgentRole.PROBLEM_GUIDE  # 默认使用问题引导者
+        
+        result = await agent_manager.route_query(
+            query=f"请帮我分析这个任务：{query_data.query}",
+            context=context,
+            preferred_agent=preferred_agent
+        )
+        
+        return AIResponse(
+            response=result["response"],
+            suggestions=result["suggestions"],
+            learning_tips=result.get("learning_tips", []),
+            agent_role=result["agent_role"],
+            timestamp=result["timestamp"]
+        )
+        
+    except Exception as e:
+        return AIResponse(
+            response=f"Error analyzing task: {str(e)}",
+            suggestions=["Check task ID", "Try again later"]
+        )
 
 
 @router.get("/study-tips", response_model=AIResponse)
 async def get_study_tips(
-    course_id: int = None,
+    course_id: Optional[int] = Query(None, description="课程ID"),
+    subject: Optional[str] = Query(None, description="学科领域"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """获取个性化学习建议"""
-    context = ""
     
-    if course_id:
-        from app.crud import get_course, get_course_tasks
-        course = get_course(db, course_id)
-        if course:
-            tasks = get_course_tasks(db, course_id)
-            context = f"""
-            Course: {course.name} ({course.code})
-            Description: {course.description or 'No description'}
-            Total Tasks: {len(tasks)}
-            """
-    else:
-        # General study tips
-        courses = get_user_courses(db, current_user.id)
-        context = f"""
-        Student: {current_user.full_name}
-        Enrolled in {len(courses)} courses
-        """
+    if not test_ollama_connection():
+        return AIResponse(
+            response="AI Assistant is temporarily unavailable, cannot provide study tips.",
+            suggestions=["Check Ollama service status", "Restart Ollama"]
+        )
     
-    query = "请根据我当前的学术情况提供个性化的学习建议和策略。"
-    
-    return await get_ai_response(query, context, current_user.id, db)
+    try:
+        # 构建用户上下文
+        context = build_user_context(current_user, course_id=course_id, db=db)
+        if subject:
+            context.subject_area = subject
+        
+        # 使用学习导师智能体
+        result = await agent_manager.route_query(
+            query="请为我提供个性化的学习建议和学习方法",
+            context=context,
+            preferred_agent=AgentRole.LEARNING_MENTOR
+        )
+        
+        return AIResponse(
+            response=result["response"],
+            suggestions=result["suggestions"],
+            learning_tips=result.get("learning_tips", []),
+            agent_role=result["agent_role"],
+            timestamp=result["timestamp"]
+        )
+        
+    except Exception as e:
+        return AIResponse(
+            response=f"Error getting study tips: {str(e)}",
+            suggestions=["Try again later", "Check course information"]
+        )
 
 
 @router.get("/status")
 async def get_ai_status():
     """检查AI助手状态和可用模型"""
-    is_connected = test_ollama_connection()
-    
-    if not is_connected:
-        return {
-            "status": "disconnected",
-            "message": "Ollama服务未运行",
-            "suggestion": "请启动Ollama服务: ollama serve"
-        }
     
     try:
-        # Get available models
-        client = ollama.Client(host=settings.ollama_base_url)
-        models = client.list()
+        # 检查Ollama连接
+        is_connected = test_ollama_connection()
         
-        available_models = [model.model for model in models.models]
-        current_model = settings.ollama_model
+        if not is_connected:
+            return {
+            "status": "error",
+            "message": "Ollama service is not running",
+            "suggestion": "Please start Ollama service: ollama serve",
+            "agents_available": False,
+            "available_models": [],
+            "current_model": None
+        }
+        
+        # 获取可用模型
+        try:
+            client = ollama.Client(host=settings.ollama_base_url)
+            models = client.list()
+            available_models = [model.model for model in models.models]
+        except:
+            available_models = []
         
         return {
-            "status": "connected",
-            "message": "AI助手已就绪",
-            "current_model": current_model,
+            "status": "healthy",
+            "message": "AI Assistant system is running normally",
+            "agents_available": True,
+            "available_agents": [role.value for role in AgentRole],
             "available_models": available_models,
-            "ollama_url": settings.ollama_base_url
+            "current_model": settings.ollama_model,
+            "ollama_url": settings.ollama_base_url,
+            "features": [
+                "Multi-agent collaboration",
+                "Responsible AI interaction",
+                "Education-oriented design",
+                "Learning analytics",
+                "Personalized recommendations"
+            ]
         }
+        
     except Exception as e:
         return {
             "status": "error",
-            "message": f"连接Ollama时出错: {str(e)}",
-            "suggestion": "请检查Ollama服务状态"
+            "message": f"Error checking AI status: {str(e)}",
+            "suggestion": "Please check Ollama service status",
+            "agents_available": False,
+            "available_models": [],
+            "current_model": None
         }
+
+
+@router.post("/conversation")
+async def start_conversation(
+    query_data: AIQuery,
+    conversation_type: str = Query("general", description="对话类型: general, learning, problem_solving, writing, coding"),
+    course_id: Optional[int] = Query(None, description="课程ID"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """开始与AI的对话式交互"""
+    
+    if not test_ollama_connection():
+        return AIResponse(
+            response="AI助手暂时不可用，无法开始对话。",
+            suggestions=["检查Ollama服务状态", "重新启动Ollama"]
+        )
+    
+    try:
+        # 根据对话类型选择智能体
+        agent_mapping = {
+            "general": AgentRole.LEARNING_MENTOR,
+            "learning": AgentRole.LEARNING_MENTOR,
+            "problem_solving": AgentRole.PROBLEM_GUIDE,
+            "writing": AgentRole.WRITING_ASSISTANT,
+            "coding": AgentRole.CODE_REVIEWER
+        }
+        
+        preferred_agent = agent_mapping.get(conversation_type, AgentRole.LEARNING_MENTOR)
+        
+        # 构建用户上下文
+        context = build_user_context(current_user, course_id=course_id, db=db)
+        
+        # 开始对话
+        result = await agent_manager.route_query(
+            query=query_data.query,
+            context=context,
+            preferred_agent=preferred_agent
+        )
+        
+        return AIResponse(
+            response=result["response"],
+            suggestions=result["suggestions"],
+            learning_tips=result.get("learning_tips", []),
+            agent_role=result["agent_role"],
+            timestamp=result["timestamp"],
+            conversation_type=conversation_type
+        )
+        
+    except Exception as e:
+        return AIResponse(
+            response=f"Error starting conversation: {str(e)}",
+            suggestions=["Rephrase your question", "Try again later"]
+        )
+
+
+@router.get("/guardrails/user-report")
+async def get_user_guardrail_report(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """获取用户护栏系统报告"""
+    try:
+        report = guardrail_system.get_user_report(current_user.id)
+        return {
+            "status": "success",
+            "report": report,
+            "message": "User guardrail report generated successfully"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generating user report: {str(e)}"
+        )
+
+
+@router.get("/guardrails/system-stats")
+async def get_guardrail_system_stats(
+    current_user: User = Depends(get_current_active_user)
+):
+    """获取护栏系统统计信息（仅管理员）"""
+    # 检查用户权限
+    if current_user.role.value != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin privileges required"
+        )
+    
+    try:
+        stats = guardrail_system.get_system_stats()
+        return {
+            "status": "success",
+            "stats": stats,
+            "message": "System statistics retrieved successfully"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving system statistics: {str(e)}"
+        )
+
+
+@router.post("/guardrails/test-query")
+async def test_query_guardrails(
+    query: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """测试查询护栏系统（用于调试）"""
+    try:
+        result = guardrail_system.check_query(
+            user_id=current_user.id,
+            query=query,
+            context={"test": True}
+        )
+        return {
+            "status": "success",
+            "result": result,
+            "message": "查询护栏测试完成"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"测试护栏系统时出错: {str(e)}"
+        )

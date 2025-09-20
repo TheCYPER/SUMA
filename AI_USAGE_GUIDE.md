@@ -1,268 +1,268 @@
-# SUMA LMS AI使用指南
+# SUMA LMS AI Usage Guide
 
-## 概述
+## Overview
 
-SUMA LMS的AI系统是一个负责任的教育性AI平台，旨在帮助学生学习和成长，而不是替代学习过程。我们的AI系统采用多智能体架构，确保提供教育导向的帮助。
+SUMA LMS's AI system is a responsible educational AI platform designed to help students learn and grow, not to replace the learning process. Our AI system uses a multi-agent architecture to ensure education-oriented assistance.
 
-## 🎯 设计理念
+## 🎯 Design Philosophy
 
-### 教育导向
-- **引导学习**：通过提问和引导帮助学生思考
-- **培养能力**：提高学生的批判性思维和问题解决能力
-- **促进理解**：帮助学生理解概念而不是记忆答案
+### Education-Oriented
+- **Guide Learning**: Help students think through questions and guidance
+- **Develop Abilities**: Improve students' critical thinking and problem-solving skills
+- **Promote Understanding**: Help students understand concepts rather than memorize answers
 
-### 负责任使用
-- **防止学术不端**：不直接提供作业答案
-- **鼓励原创**：引导学生表达自己的想法
-- **学术诚信**：维护学术诚信和道德标准
+### Responsible Use
+- **Prevent Academic Misconduct**: Do not provide direct homework answers
+- **Encourage Originality**: Guide students to express their own ideas
+- **Academic Integrity**: Maintain academic integrity and ethical standards
 
-## 🤖 AI智能体系统
+## 🤖 AI Agent System
 
-### 1. 学习导师 (Learning Mentor)
-**职责**：提供学习策略和指导
-**适用场景**：
-- 制定学习计划
-- 改善学习方法
-- 培养学习习惯
-- 分析学习进度
+### 1. Learning Mentor
+**Role**: Provides learning strategies and guidance
+**Use Cases**:
+- Create study plans
+- Improve learning methods
+- Develop study habits
+- Analyze learning progress
 
-**示例对话**：
+**Example Conversation**:
 ```
-学生：我想提高学习效率
-AI：我很乐意帮助你提高学习效率！让我们先了解一下你的学习情况：
-1. 你目前的学习目标是什么？
-2. 你觉得哪些方面需要改进？
-3. 你尝试过哪些学习方法？
-```
-
-### 2. 概念解释者 (Concept Explainer)
-**职责**：解释复杂概念和理论
-**适用场景**：
-- 理解抽象概念
-- 澄清理论要点
-- 建立知识联系
-- 举例说明
-
-**示例对话**：
-```
-学生：什么是机器学习？
-AI：机器学习是一个很有趣的概念！让我用简单的方式解释：
-机器学习就像教计算机学习，就像我们人类学习一样。
-你能告诉我你对"学习"这个词的理解吗？这样我可以更好地解释机器学习。
+Student: I want to improve my learning efficiency
+AI: I'd be happy to help you improve your learning efficiency! Let's first understand your learning situation:
+1. What are your current learning goals?
+2. What aspects do you think need improvement?
+3. What learning methods have you tried?
 ```
 
-### 3. 问题引导者 (Problem Guide)
-**职责**：引导学生思考问题
-**适用场景**：
-- 分析问题结构
-- 分解复杂问题
-- 提供思考框架
-- 鼓励尝试
+### 2. Concept Explainer
+**Role**: Explains complex concepts and theories
+**Use Cases**:
+- Understand abstract concepts
+- Clarify theoretical points
+- Build knowledge connections
+- Illustrate with examples
 
-**示例对话**：
+**Example Conversation**:
 ```
-学生：这道题我不会做
-AI：我理解你遇到困难。让我们一步步分析：
-1. 这道题要求什么？
-2. 你尝试过什么方法？
-3. 在哪个步骤卡住了？
-4. 你记得相关的概念或公式吗？
+Student: What is machine learning?
+AI: Machine learning is a fascinating concept! Let me explain it in simple terms:
+Machine learning is like teaching computers to learn, just like we humans learn.
+Can you tell me what you understand about the word "learning"? This way I can better explain machine learning.
 ```
 
-### 4. 写作助手 (Writing Assistant)
-**职责**：帮助改善写作技巧
-**适用场景**：
-- 改善文章结构
-- 提高表达技巧
-- 提供写作框架
-- 语言润色
+### 3. Problem Guide
+**Role**: Guides students to think about problems
+**Use Cases**:
+- Analyze problem structure
+- Break down complex problems
+- Provide thinking frameworks
+- Encourage experimentation
 
-**示例对话**：
+**Example Conversation**:
 ```
-学生：帮我写一篇论文
-AI：我可以帮你改善写作技巧，但不能直接写内容。让我们先讨论：
-1. 你的论文主题是什么？
-2. 你有哪些观点和论据？
-3. 你希望采用什么结构？
-4. 你遇到什么写作困难？
-```
-
-### 5. 代码审查者 (Code Reviewer)
-**职责**：审查和改善代码质量
-**适用场景**：
-- 代码规范检查
-- 性能优化建议
-- 最佳实践指导
-- 调试帮助
-
-**示例对话**：
-```
-学生：帮我写代码
-AI：我可以帮你改善代码质量，但不能直接编写。让我们先看看：
-1. 你的代码思路是什么？
-2. 你尝试过什么方法？
-3. 遇到了什么错误？
-4. 你希望实现什么功能？
+Student: I can't solve this problem
+AI: I understand you're having difficulties. Let's analyze it step by step:
+1. What does this problem require?
+2. What methods have you tried?
+3. At which step did you get stuck?
+4. Do you remember related concepts or formulas?
 ```
 
-### 6. 学习分析员 (Learning Analyst)
-**职责**：分析学习进度和效果
-**适用场景**：
-- 学习轨迹分析
-- 薄弱环节识别
-- 个性化建议
-- 进度评估
+### 4. Writing Assistant
+**Role**: Helps improve writing skills
+**Use Cases**:
+- Improve article structure
+- Enhance expression skills
+- Provide writing frameworks
+- Language polishing
 
-**示例对话**：
+**Example Conversation**:
 ```
-学生：分析我的学习情况
-AI：让我帮你分析学习情况。请告诉我：
-1. 你最近学习了哪些内容？
-2. 你觉得哪些方面掌握得好？
-3. 哪些方面还需要加强？
-4. 你的学习目标是什么？
+Student: Help me write a paper
+AI: I can help you improve your writing skills, but I can't write content directly. Let's discuss first:
+1. What is your paper topic?
+2. What viewpoints and evidence do you have?
+3. What structure do you want to use?
+4. What writing difficulties are you facing?
 ```
 
-## 🛡️ 护栏系统
+### 5. Code Reviewer
+**Role**: Reviews and improves code quality
+**Use Cases**:
+- Code quality and standards review
+- Performance optimization suggestions
+- Best practices guidance
+- Debugging help
 
-### 违规检测
-系统会自动检测以下行为：
-- 直接答案请求
-- 作业代写请求
-- 抄袭请求
-- 过度使用
-- 不当内容
+**Example Conversation**:
+```
+Student: Help me write code
+AI: I can help you improve code quality, but I can't write code directly. Let's look at:
+1. What is your coding approach?
+2. What methods have you tried?
+3. What errors are you encountering?
+4. What functionality do you want to implement?
+```
 
-### 教育干预
-当检测到不当使用行为时，系统会：
-1. **温和提醒**：解释为什么不能直接提供答案
-2. **引导思考**：提供正确的使用方式
-3. **学习建议**：推荐合适的学习方法
-4. **持续监控**：跟踪使用模式
+### 6. Learning Analyst
+**Role**: Analyzes learning progress and effectiveness
+**Use Cases**:
+- Learning trajectory analysis
+- Identify weak areas
+- Personalized recommendations
+- Progress assessment
 
-### 使用限制
-- **频率限制**：防止过度依赖AI
-- **内容过滤**：阻止不当请求
-- **行为监控**：跟踪使用模式
-- **教育干预**：引导正确使用
+**Example Conversation**:
+```
+Student: Analyze my learning situation
+AI: Let me help you analyze your learning situation. Please tell me:
+1. What content have you learned recently?
+2. Which aspects do you think you've mastered well?
+3. Which aspects still need strengthening?
+4. What are your learning goals?
+```
 
-## 📚 使用建议
+## 🛡️ Guardrail System
 
-### ✅ 正确使用方式
+### Violation Detection
+The system automatically detects the following behaviors:
+- Direct answer requests
+- Homework writing requests
+- Plagiarism requests
+- Excessive usage
+- Inappropriate content
 
-1. **寻求学习指导**
-   - "请帮我理解这个概念"
-   - "如何提高我的学习效率？"
-   - "这道题的思路是什么？"
+### Educational Intervention
+When inappropriate use is detected, the system will:
+1. **Gentle Reminder**: Explain why direct answers cannot be provided
+2. **Guide Thinking**: Provide correct usage methods
+3. **Learning Suggestions**: Recommend appropriate learning methods
+4. **Continuous Monitoring**: Track usage patterns
 
-2. **请求方法建议**
-   - "有什么好的学习方法？"
-   - "如何改善我的写作技巧？"
-   - "如何提高编程能力？"
+### Usage Restrictions
+- **Frequency Limits**: Prevent over-dependence on AI
+- **Content Filtering**: Block inappropriate requests
+- **Behavior Monitoring**: Track usage patterns
+- **Educational Intervention**: Guide correct usage
 
-3. **寻求问题分析**
-   - "帮我分析一下这个问题"
-   - "我的思路哪里有问题？"
-   - "如何改进我的方法？"
+## 📚 Usage Recommendations
 
-### ❌ 避免的使用方式
+### ✅ Correct Usage
 
-1. **直接答案请求**
-   - "直接告诉我答案"
-   - "给我完整代码"
-   - "帮我写作业"
+1. **Seek Learning Guidance**
+   - "Please help me understand this concept"
+   - "How can I improve my learning efficiency?"
+   - "What's the approach to this problem?"
 
-2. **代写请求**
-   - "帮我写论文"
-   - "帮我做实验报告"
-   - "帮我完成项目"
+2. **Request Method Suggestions**
+   - "What are some good learning methods?"
+   - "How can I improve my writing skills?"
+   - "How can I enhance my programming abilities?"
 
-3. **抄袭请求**
-   - "复制别人的答案"
-   - "照搬网上的内容"
-   - "直接使用别人的代码"
+3. **Seek Problem Analysis**
+   - "Help me analyze this problem"
+   - "Where is my approach wrong?"
+   - "How can I improve my method?"
 
-## 🔧 技术特性
+### ❌ Avoid These Usage Patterns
 
-### 多智能体协作
-- 根据查询内容自动选择最合适的智能体
-- 不同智能体提供专业化的帮助
-- 智能体之间可以协作处理复杂问题
+1. **Direct Answer Requests**
+   - "Directly tell me the answer"
+   - "Give me the complete code"
+   - "Help me with my homework"
 
-### 智能路由
-- 自动分析查询意图
-- 选择最合适的智能体
-- 提供个性化的响应
+2. **Writing Requests**
+   - "Write my paper"
+   - "Write my lab report"
+   - "Complete my project"
 
-### 上下文管理
-- 维护学习历史
-- 跟踪学习目标
-- 个性化建议
+3. **Plagiarism Requests**
+   - "Copy someone else's answer"
+   - "Use content from the internet directly"
+   - "Use someone else's code directly"
 
-### 实时监控
-- 使用频率监控
-- 行为模式分析
-- 自动干预机制
+## 🔧 Technical Features
 
-## 📊 学习分析
+### Multi-Agent Collaboration
+- Automatically select the most appropriate agent based on query content
+- Different agents provide specialized assistance
+- Agents can collaborate to handle complex problems
 
-### 个人报告
-- 使用统计
-- 学习模式分析
-- 进步趋势
-- 个性化建议
+### Smart Routing
+- Automatically analyze query intent
+- Select the most suitable agent
+- Provide personalized responses
 
-### 系统监控
-- 整体使用情况
-- 违规行为统计
-- 系统健康状态
-- 优化建议
+### Context Management
+- Maintain learning history
+- Track learning goals
+- Personalized recommendations
 
-## 🚀 最佳实践
+### Real-time Monitoring
+- Usage frequency monitoring
+- Behavior pattern analysis
+- Automatic intervention mechanisms
 
-### 1. 明确学习目标
-- 设定具体的学习目标
-- 定期评估学习进度
-- 调整学习策略
+## 📊 Learning Analytics
 
-### 2. 主动思考
-- 先尝试独立思考
-- 与同学讨论交流
-- 查阅相关资料
+### Personal Reports
+- Usage statistics
+- Learning pattern analysis
+- Progress trends
+- Personalized recommendations
 
-### 3. 合理使用AI
-- 将AI作为学习工具
-- 不要过度依赖
-- 保持学术诚信
+### System Monitoring
+- Overall usage statistics
+- Violation behavior statistics
+- System health status
+- Optimization recommendations
 
-### 4. 持续改进
-- 反思学习过程
-- 调整学习方法
-- 寻求反馈
+## 🚀 Best Practices
 
-## 🆘 常见问题
+### 1. Set Clear Learning Goals
+- Define specific learning objectives
+- Regularly assess learning progress
+- Adjust learning strategies
 
-### Q: 为什么AI不直接给我答案？
-A: 我们的AI系统设计为教育工具，目的是帮助你学习而不是替代学习。直接提供答案会阻碍你的学习过程。
+### 2. Think Actively
+- Try to think independently first
+- Discuss and exchange ideas with classmates
+- Consult relevant materials
 
-### Q: 如何获得更好的帮助？
-A: 明确描述你的问题，分享你的思考过程，提出具体的问题，这样AI可以更好地帮助你。
+### 3. Use AI Responsibly
+- Use AI as a learning tool
+- Don't over-depend on it
+- Maintain academic integrity
 
-### Q: 如果AI的回答不满意怎么办？
-A: 可以尝试重新表述问题，或者选择不同的智能体类型。也可以与同学讨论或咨询老师。
+### 4. Continuous Improvement
+- Reflect on the learning process
+- Adjust learning methods
+- Seek feedback
 
-### Q: 如何避免被系统限制？
-A: 负责任地使用AI，不要请求直接答案，不要要求代写作业，保持学术诚信。
+## 🆘 Frequently Asked Questions
 
-## 📞 支持
+### Q: Why doesn't the AI give me direct answers?
+A: Our AI system is designed as an educational tool to help you learn, not to replace learning. Providing direct answers would hinder your learning process.
 
-如果你在使用AI系统时遇到问题：
+### Q: How can I get better help?
+A: Clearly describe your problem, share your thought process, ask specific questions, so the AI can better assist you.
 
-1. 查看本使用指南
-2. 检查系统状态
-3. 联系技术支持
-4. 提供反馈建议
+### Q: What if I'm not satisfied with the AI's response?
+A: Try rephrasing your question or selecting a different agent type. You can also discuss with classmates or consult teachers.
+
+### Q: How can I avoid being restricted by the system?
+A: Use AI responsibly, don't request direct answers, don't ask for homework writing, maintain academic integrity.
+
+## 📞 Support
+
+If you encounter problems using the AI system:
+
+1. Check this usage guide
+2. Check system status
+3. Contact technical support
+4. Provide feedback and suggestions
 
 ---
 
-**记住：AI是学习工具，不是学习替代品。真正的学习需要你的主动思考和努力！** 🎓
+**Remember: AI is a learning tool, not a learning replacement. Real learning requires your active thinking and effort!** 🎓

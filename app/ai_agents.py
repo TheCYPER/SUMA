@@ -101,19 +101,19 @@ class AIAgent:
         return True
     
     def _generate_guidance_response(self, query: str, context: UserContext) -> Dict[str, Any]:
-        """生成指导性响应，而不是直接答案"""
+        """Generate guidance response instead of direct answers"""
         guidance_prompts = {
-            AgentRole.LEARNING_MENTOR: "我理解你想学习，但让我先了解一下你的学习目标和当前的理解程度。",
-            AgentRole.CONCEPT_EXPLAINER: "我可以帮你理解概念，但让我们从基础开始，你能告诉我你对这个概念目前的理解吗？",
-            AgentRole.PROBLEM_GUIDE: "我可以通过提问来引导你思考，但不会直接给出答案。让我们先分析一下问题的关键点。",
-            AgentRole.WRITING_ASSISTANT: "我可以帮你改善写作结构和表达，但不能直接写内容。让我们先讨论你的想法和结构。",
-            AgentRole.CODE_REVIEWER: "我可以帮你审查和改善代码，但不能直接编写。让我们先看看你的代码思路。",
-            AgentRole.LEARNING_ANALYST: "我可以分析你的学习情况，但需要先了解你的学习目标和进度。"
+            AgentRole.LEARNING_MENTOR: "I understand you want to learn, but let me first understand your learning goals and current level of understanding.",
+            AgentRole.CONCEPT_EXPLAINER: "I can help you understand concepts, but let's start from the basics. Can you tell me what you currently understand about this concept?",
+            AgentRole.PROBLEM_GUIDE: "I can guide your thinking through questions, but won't give direct answers. Let's first analyze the key points of the problem.",
+            AgentRole.WRITING_ASSISTANT: "I can help improve your writing structure and expression, but can't write content directly. Let's discuss your ideas and structure first.",
+            AgentRole.CODE_REVIEWER: "I can help review and improve your code, but can't write it directly. Let's look at your coding approach first.",
+            AgentRole.LEARNING_ANALYST: "I can analyze your learning situation, but need to understand your learning goals and progress first."
         }
         
         return {
             "agent_role": self.role.value,
-            "response": guidance_prompts.get(self.role, "让我帮你以正确的方式学习。"),
+            "response": guidance_prompts.get(self.role, "Let me help you learn in the right way."),
             "suggestions": self._get_guidance_suggestions(),
             "learning_tips": self._generate_learning_tips(context),
             "timestamp": datetime.now().isoformat()
@@ -193,34 +193,34 @@ class AIAgent:
         return f"我理解你想知道答案，但让我们换个角度思考：{response}\n\n你能告诉我你的思考过程吗？这样我可以更好地帮助你学习。"
     
     def _generate_suggestions(self, query: str, response: str) -> List[str]:
-        """生成学习建议"""
+        """Generate learning suggestions"""
         suggestions = [
-            "尝试自己思考问题的关键点",
-            "列出你已经掌握的相关知识",
-            "思考不同的解决方法",
-            "与同学讨论你的想法",
-            "查阅相关学习资料"
+            "Try thinking about the key points of the problem yourself",
+            "List the related knowledge you already have",
+            "Think about different solution methods",
+            "Discuss your ideas with classmates",
+            "Consult relevant learning materials"
         ]
-        return suggestions[:3]  # 返回前3个建议
+        return suggestions[:3]  # Return first 3 suggestions
     
     def _generate_learning_tips(self, context: UserContext) -> List[str]:
-        """生成个性化学习建议"""
+        """Generate personalized learning tips"""
         tips = [
-            "定期复习已学内容",
-            "主动提问和思考",
-            "与同学交流学习心得",
-            "制定学习计划",
-            "记录学习笔记"
+            "Regularly review learned content",
+            "Actively ask questions and think",
+            "Exchange learning experiences with classmates",
+            "Create a study plan",
+            "Keep learning notes"
         ]
-        return tips[:2]  # 返回前2个建议
+        return tips[:2]  # Return first 2 tips
     
     def _get_guidance_suggestions(self) -> List[str]:
-        """获取指导性建议"""
+        """Get guidance suggestions"""
         return [
-            "告诉我你的思考过程",
-            "分享你已经尝试的方法",
-            "描述你遇到的具体困难",
-            "说明你的学习目标"
+            "Tell me your thought process",
+            "Share the methods you've already tried",
+            "Describe the specific difficulties you're facing",
+            "Explain your learning goals"
         ]
 
 
@@ -229,22 +229,22 @@ class LearningMentor(AIAgent):
     
     def __init__(self):
         system_prompt = """
-你是一位经验丰富的学习导师，专门帮助学生制定学习策略和培养学习习惯。
-你的目标是引导学生自主学习，而不是直接提供答案。
+You are an experienced learning mentor who specializes in helping students develop learning strategies and study habits.
+Your goal is to guide students toward independent learning, not to provide direct answers.
 
-你的职责：
-1. 帮助学生制定学习计划
-2. 提供学习方法和技巧
-3. 培养良好的学习习惯
-4. 鼓励学生独立思考
-5. 分析学习进度和效果
+Your responsibilities:
+1. Help students create learning plans
+2. Provide learning methods and techniques
+3. Develop good study habits
+4. Encourage independent thinking
+5. Analyze learning progress and effectiveness
 
-重要原则：
-- 通过提问引导学生思考
-- 提供学习框架而不是具体答案
-- 鼓励学生主动探索
-- 帮助学生建立学习目标
-- 培养批判性思维
+Important principles:
+- Guide student thinking through questions
+- Provide learning frameworks rather than specific answers
+- Encourage students to explore actively
+- Help students establish learning goals
+- Develop critical thinking skills
         """
         
         capabilities = AgentCapabilities(
@@ -264,26 +264,26 @@ class LearningMentor(AIAgent):
 
 
 class ConceptExplainer(AIAgent):
-    """概念解释者智能体"""
+    """Concept Explainer Agent"""
     
     def __init__(self):
         system_prompt = """
-你是一位专业的概念解释者，擅长用简单易懂的方式解释复杂概念。
-你的目标是帮助学生理解概念的本质，而不是记忆答案。
+You are a professional concept explainer who excels at explaining complex concepts in simple, understandable ways.
+Your goal is to help students understand the essence of concepts, not to memorize answers.
 
-你的职责：
-1. 解释复杂概念和理论
-2. 提供概念的理解框架
-3. 举例说明抽象概念
-4. 帮助学生建立知识联系
-5. 澄清概念误区
+Your responsibilities:
+1. Explain complex concepts and theories
+2. Provide conceptual understanding frameworks
+3. Illustrate abstract concepts with examples
+4. Help students build knowledge connections
+5. Clarify conceptual misconceptions
 
-重要原则：
-- 从基础概念开始解释
-- 使用生活中的例子
-- 鼓励学生提问
-- 帮助学生建立知识体系
-- 不直接提供作业答案
+Important principles:
+- Start explanations from basic concepts
+- Use real-life examples
+- Encourage student questions
+- Help students build knowledge systems
+- Do not provide direct homework answers
         """
         
         capabilities = AgentCapabilities(
@@ -302,26 +302,26 @@ class ConceptExplainer(AIAgent):
 
 
 class ProblemGuide(AIAgent):
-    """问题引导者智能体"""
+    """Problem Guide Agent"""
     
     def __init__(self):
         system_prompt = """
-你是一位问题解决引导者，擅长通过提问和引导帮助学生思考问题。
-你的目标是培养学生的批判性思维和问题解决能力。
+You are a problem-solving guide who excels at helping students think through problems through questions and guidance.
+Your goal is to develop students' critical thinking and problem-solving abilities.
 
-你的职责：
-1. 通过提问引导学生思考
-2. 帮助学生分解复杂问题
-3. 提供思考框架和方法
-4. 鼓励学生尝试不同方法
-5. 培养学生的逻辑思维
+Your responsibilities:
+1. Guide student thinking through questions
+2. Help students break down complex problems
+3. Provide thinking frameworks and methods
+4. Encourage students to try different approaches
+5. Develop students' logical thinking
 
-重要原则：
-- 通过提问而不是直接回答
-- 引导学生发现问题的关键点
-- 鼓励学生尝试和犯错
-- 帮助学生建立解决问题的信心
-- 不提供标准答案
+Important principles:
+- Guide through questions rather than direct answers
+- Help students discover key points of problems
+- Encourage students to try and make mistakes
+- Help students build confidence in problem-solving
+- Do not provide standard answers
         """
         
         capabilities = AgentCapabilities(
@@ -339,26 +339,26 @@ class ProblemGuide(AIAgent):
 
 
 class WritingAssistant(AIAgent):
-    """写作助手智能体"""
+    """Writing Assistant Agent"""
     
     def __init__(self):
         system_prompt = """
-你是一位专业的写作助手，专门帮助学生改善写作技巧和表达。
-你的目标是提高学生的写作能力，而不是代写内容。
+You are a professional writing assistant who specializes in helping students improve their writing skills and expression.
+Your goal is to enhance students' writing abilities, not to write content for them.
 
-你的职责：
-1. 提供写作技巧和指导
-2. 帮助改善文章结构
-3. 建议更好的表达方式
-4. 提供写作框架和模板
-5. 鼓励学生表达自己的想法
+Your responsibilities:
+1. Provide writing techniques and guidance
+2. Help improve article structure
+3. Suggest better ways of expression
+4. Provide writing frameworks and templates
+5. Encourage students to express their own ideas
 
-重要原则：
-- 不直接写文章内容
-- 提供写作技巧和结构建议
-- 鼓励学生表达原创想法
-- 帮助改善表达而不是替代思考
-- 培养学生的写作能力
+Important principles:
+- Do not write article content directly
+- Provide writing techniques and structural advice
+- Encourage students to express original ideas
+- Help improve expression rather than replace thinking
+- Develop students' writing abilities
         """
         
         capabilities = AgentCapabilities(
@@ -377,26 +377,26 @@ class WritingAssistant(AIAgent):
 
 
 class CodeReviewer(AIAgent):
-    """代码审查者智能体"""
+    """Code Reviewer Agent"""
     
     def __init__(self):
         system_prompt = """
-你是一位专业的代码审查者，专门帮助学生改善代码质量和编程技能。
-你的目标是提高学生的编程能力，而不是直接编写代码。
+You are a professional code reviewer who specializes in helping students improve code quality and programming skills.
+Your goal is to enhance students' programming abilities, not to write code directly.
 
-你的职责：
-1. 审查代码质量和规范
-2. 提供代码改进建议
-3. 解释编程概念和最佳实践
-4. 帮助学生理解代码逻辑
-5. 培养良好的编程习惯
+Your responsibilities:
+1. Review code quality and standards
+2. Provide code improvement suggestions
+3. Explain programming concepts and best practices
+4. Help students understand code logic
+5. Develop good programming habits
 
-重要原则：
-- 不直接编写完整代码
-- 提供代码改进建议和思路
-- 解释编程概念和原理
-- 鼓励学生独立思考和编程
-- 培养解决问题的编程思维
+Important principles:
+- Do not write complete code directly
+- Provide code improvement suggestions and approaches
+- Explain programming concepts and principles
+- Encourage independent thinking and programming
+- Develop problem-solving programming mindset
         """
         
         capabilities = AgentCapabilities(
@@ -416,26 +416,26 @@ class CodeReviewer(AIAgent):
 
 
 class LearningAnalyst(AIAgent):
-    """学习分析员智能体"""
+    """Learning Analyst Agent"""
     
     def __init__(self):
         system_prompt = """
-你是一位学习分析专家，专门分析学习数据并提供个性化学习建议。
-你的目标是帮助学生优化学习过程和效果。
+You are a learning analysis expert who specializes in analyzing learning data and providing personalized learning recommendations.
+Your goal is to help students optimize their learning process and effectiveness.
 
-你的职责：
-1. 分析学习进度和效果
-2. 识别学习中的薄弱环节
-3. 提供个性化学习建议
-4. 预测学习需求和挑战
-5. 优化学习策略和方法
+Your responsibilities:
+1. Analyze learning progress and effectiveness
+2. Identify weak areas in learning
+3. Provide personalized learning recommendations
+4. Predict learning needs and challenges
+5. Optimize learning strategies and methods
 
-重要原则：
-- 基于数据提供客观分析
-- 提供个性化的学习建议
-- 帮助学生设定合理的学习目标
-- 鼓励持续学习和改进
-- 不直接提供学习内容答案
+Important principles:
+- Provide objective analysis based on data
+- Provide personalized learning recommendations
+- Help students set reasonable learning goals
+- Encourage continuous learning and improvement
+- Do not provide direct answers to learning content
         """
         
         capabilities = AgentCapabilities(
@@ -522,13 +522,13 @@ class AgentManager:
         }
     
     def _get_agent_description(self, role: AgentRole) -> str:
-        """获取智能体描述"""
+        """Get agent description"""
         descriptions = {
-            AgentRole.LEARNING_MENTOR: "学习导师，帮助你制定学习计划和培养学习习惯",
-            AgentRole.CONCEPT_EXPLAINER: "概念解释者，帮助你理解复杂概念和理论",
-            AgentRole.PROBLEM_GUIDE: "问题引导者，通过提问引导你思考问题",
-            AgentRole.WRITING_ASSISTANT: "写作助手，帮助你改善写作技巧和表达",
-            AgentRole.CODE_REVIEWER: "代码审查者，帮助你改善代码质量和编程技能",
-            AgentRole.LEARNING_ANALYST: "学习分析员，分析你的学习进度并提供建议"
+            AgentRole.LEARNING_MENTOR: "Learning mentor, helps you create study plans and develop learning habits",
+            AgentRole.CONCEPT_EXPLAINER: "Concept explainer, helps you understand complex concepts and theories",
+            AgentRole.PROBLEM_GUIDE: "Problem guide, guides your thinking through questions",
+            AgentRole.WRITING_ASSISTANT: "Writing assistant, helps you improve writing skills and expression",
+            AgentRole.CODE_REVIEWER: "Code reviewer, helps you improve code quality and programming skills",
+            AgentRole.LEARNING_ANALYST: "Learning analyst, analyzes your learning progress and provides recommendations"
         }
-        return descriptions.get(role, "AI学习助手")
+        return descriptions.get(role, "AI Learning Assistant")

@@ -36,57 +36,64 @@ class ContentFilter:
     """内容过滤器"""
     
     def __init__(self):
-        # 直接答案请求模式
+        # Direct answer request patterns
         self.direct_answer_patterns = [
-            r"直接告诉我答案",
-            r"帮我写作业",
-            r"给我答案",
-            r"帮我做",
-            r"直接写",
-            r"完整答案",
-            r"标准答案",
-            r"告诉我结果",
-            r"给我代码",
-            r"帮我完成",
-            r"代写",
-            r"帮我做作业",
-            r"直接给我",
-            r"完整解决方案"
+            r"directly tell me the answer",
+            r"give me the answer",
+            r"help me with homework",
+            r"do it for me",
+            r"write it directly",
+            r"complete answer",
+            r"standard answer",
+            r"tell me the result",
+            r"give me the code",
+            r"help me complete",
+            r"write for me",
+            r"do my homework",
+            r"give it to me directly",
+            r"complete solution",
+            r"just tell me",
+            r"show me the answer"
         ]
         
-        # 作业代写模式
+        # Homework doing patterns
         self.homework_patterns = [
-            r"帮我写论文",
-            r"帮我写报告",
-            r"帮我写代码",
-            r"帮我做实验",
-            r"帮我写程序",
-            r"帮我完成项目",
-            r"帮我写作业",
-            r"代写",
-            r"帮我做",
-            r"完整代码",
-            r"完整程序"
+            r"write my paper",
+            r"write my report",
+            r"write my code",
+            r"do my experiment",
+            r"write my program",
+            r"complete my project",
+            r"write my homework",
+            r"write for me",
+            r"do it for me",
+            r"complete code",
+            r"complete program",
+            r"help me write",
+            r"write my assignment"
         ]
         
-        # 抄袭请求模式
+        # Plagiarism request patterns
         self.plagiarism_patterns = [
-            r"复制",
-            r"抄袭",
-            r"照搬",
-            r"直接使用",
-            r"不改动",
-            r"原样",
-            r"一模一样"
+            r"copy",
+            r"plagiarize",
+            r"copy directly",
+            r"use directly",
+            r"without changes",
+            r"exactly the same",
+            r"identical",
+            r"copy from",
+            r"steal from"
         ]
         
-        # 不当内容模式
+        # Inappropriate content patterns
         self.inappropriate_patterns = [
-            r"作弊",
-            r"欺骗",
-            r"造假",
-            r"虚假",
-            r"不诚实"
+            r"cheat",
+            r"deceive",
+            r"fake",
+            r"false",
+            r"dishonest",
+            r"fraud"
         ]
     
     def check_query(self, query: str) -> List[Tuple[ViolationType, int]]:
@@ -230,39 +237,39 @@ class EducationalIntervention:
     def __init__(self):
         self.intervention_messages = {
             ViolationType.DIRECT_ANSWER_REQUEST: {
-                "message": "我理解你想快速得到答案，但直接告诉你答案不会帮助你学习。让我们换个方式：",
+                "message": "I understand you want to get answers quickly, but giving you direct answers won't help you learn. Let's try a different approach:",
                 "suggestions": [
-                    "告诉我你对这个问题的理解",
-                    "分享你已经尝试的方法",
-                    "描述你遇到的具体困难",
-                    "我们可以一起分析问题的关键点"
+                    "Tell me your understanding of this problem",
+                    "Share the methods you've already tried",
+                    "Describe the specific difficulties you're facing",
+                    "We can analyze the key points of the problem together"
                 ]
             },
             ViolationType.HOMEWORK_DOING: {
-                "message": "我不能帮你直接完成作业，但我可以教你如何思考和解决问题：",
+                "message": "I can't help you complete assignments directly, but I can teach you how to think and solve problems:",
                 "suggestions": [
-                    "我们可以分析作业的要求和目标",
-                    "讨论解决问题的方法和思路",
-                    "练习相关的概念和技能",
-                    "制定学习计划来提高能力"
+                    "We can analyze the assignment requirements and objectives",
+                    "Discuss problem-solving methods and approaches",
+                    "Practice related concepts and skills",
+                    "Create a study plan to improve your abilities"
                 ]
             },
             ViolationType.PLAGIARISM_REQUEST: {
-                "message": "学术诚信非常重要。让我帮你学会如何正确引用和表达自己的想法：",
+                "message": "Academic integrity is very important. Let me help you learn how to properly cite and express your own ideas:",
                 "suggestions": [
-                    "学习如何正确引用资料",
-                    "练习用自己的话表达观点",
-                    "了解学术写作规范",
-                    "培养批判性思维能力"
+                    "Learn how to properly cite sources",
+                    "Practice expressing your views in your own words",
+                    "Understand academic writing standards",
+                    "Develop critical thinking skills"
                 ]
             },
             ViolationType.EXCESSIVE_USAGE: {
-                "message": "我注意到你使用AI助手比较频繁。让我们确保你是在学习而不是依赖：",
+                "message": "I notice you're using the AI assistant quite frequently. Let's make sure you're learning rather than depending on it:",
                 "suggestions": [
-                    "尝试先独立思考问题",
-                    "与同学讨论和交流",
-                    "查阅相关学习资料",
-                    "制定合理的学习计划"
+                    "Try thinking about problems independently first",
+                    "Discuss and exchange ideas with classmates",
+                    "Consult relevant learning materials",
+                    "Create a reasonable study plan"
                 ]
             }
         }

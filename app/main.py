@@ -4,7 +4,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.routers import auth, courses, tasks, calendar, files
-from app.routers.ai_new import router as ai_router
+from app.routers.ai import router as ai_router
 
 # 创建数据库表
 Base.metadata.create_all(bind=engine)
