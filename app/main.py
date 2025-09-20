@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.config import settings
 from app.database import engine, Base
-from app.routers import auth, courses, tasks, calendar, ai, files
+from app.routers import auth, courses, tasks, calendar, files
+from app.routers.ai_new import router as ai_router
 
 # 创建数据库表
 Base.metadata.create_all(bind=engine)
@@ -37,7 +38,7 @@ app.include_router(auth.router)
 app.include_router(courses.router)
 app.include_router(tasks.router)
 app.include_router(calendar.router)
-app.include_router(ai.router)
+app.include_router(ai_router)  # 使用新的多智能体AI路由
 app.include_router(files.router)
 
 

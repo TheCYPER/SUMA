@@ -296,9 +296,9 @@ alembic/versions/*.py
 !alembic/versions/.gitkeep
 
 # Test files
-test_*.py
-*_test.py
-tests/
+# test_*.py
+# *_test.py
+# tests/
 
 # Documentation build
 docs/_build/

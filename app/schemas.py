@@ -291,6 +291,10 @@ class AIQuery(BaseModel):
 class AIResponse(BaseModel):
     response: str
     suggestions: List[str] = []
+    learning_tips: List[str] = []
+    agent_role: Optional[str] = None
+    timestamp: Optional[str] = None
+    conversation_type: Optional[str] = None
 
 
 # File Upload Schemas
