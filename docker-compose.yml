@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  suma-lms:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./suma.db
+      - SECRET_KEY=your-secret-key-change-in-production
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.1:8b
+    volumes:
+      - ./uploads:/app/uploads
+      - ./suma.db:/app/suma.db
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+
+  # Optional: PostgreSQL for production
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=suma_lms
+      - POSTGRES_USER=suma_user
+      - POSTGRES_PASSWORD=suma_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  ollama_data:
+  postgres_data:
