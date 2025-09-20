@@ -1,25 +1,30 @@
 # SUMA - Next-Generation Learning Management System
 
-SUMA is a modern, AI-powered Learning Management System built with FastAPI and designed to provide an intuitive and efficient learning experience for students and teachers.
+SUMA is a modern, AI-powered Learning Management System built with FastAPI and Ollama, designed to provide an intuitive and efficient learning experience for students and teachers.
 
-## 🚀 Features
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com)
+[![Ollama](https://img.shields.io/badge/Ollama-AI%20Powered-purple.svg)](https://ollama.ai)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### Core Features
-- **User Management**: Student, Teacher, and Admin roles with authentication
-- **Course Management**: Create and manage courses with custom icons and colors
-- **Task Management**: Assignments, tests, labs, projects, and quizzes
-- **File Upload/Download**: Support for various file types with preview capabilities
-- **Calendar Integration**: Weekly calendar view with .ics export
-- **AI Assistant**: Intelligent help for students and task analysis
-- **Dashboard**: Personalized dashboard with stats and upcoming tasks
+## ✨ Features
 
-### Advanced Features
-- **Real-time Notifications**: Stay updated with task deadlines and announcements
-- **Grade Management**: Track grades and progress across courses
-- **Attendance Tracking**: Monitor student attendance
-- **Resource Management**: Share course materials and resources
-- **Theme Customization**: Personalize the interface
-- **Mobile Responsive**: Works seamlessly on all devices
+### 🎯 Core Features
+- **👥 User Management**: Student, Teacher, and Admin roles with JWT authentication
+- **📚 Course Management**: Create and manage courses with custom icons and colors
+- **📝 Task Management**: Assignments, tests, labs, projects, and quizzes
+- **📁 File Upload/Download**: Support for various file types with preview capabilities
+- **📅 Calendar Integration**: Weekly calendar view with .ics export
+- **🤖 AI Assistant**: Local AI-powered help using Ollama
+- **📊 Dashboard**: Personalized dashboard with stats and upcoming tasks
+
+### 🚀 Advanced Features
+- **🔔 Real-time Notifications**: Stay updated with task deadlines and announcements
+- **📈 Grade Management**: Track grades and progress across courses
+- **📋 Attendance Tracking**: Monitor student attendance
+- **📖 Resource Management**: Share course materials and resources
+- **🎨 Theme Customization**: Personalize the interface
+- **📱 Mobile Responsive**: Works seamlessly on all devices
 
 ## 🛠️ Tech Stack
 
@@ -28,54 +33,68 @@ SUMA is a modern, AI-powered Learning Management System built with FastAPI and d
 - **SQLAlchemy**: SQL toolkit and ORM
 - **SQLite**: Lightweight database (easily upgradeable to PostgreSQL)
 - **Alembic**: Database migration tool
-- **OpenAI API**: AI assistant integration
+- **Ollama**: Local AI model integration
 - **JWT**: Secure authentication
+- **Pydantic**: Data validation and settings management
 
-### Frontend (Coming Soon)
-- **Next.js**: React framework
-- **TailwindCSS**: Utility-first CSS framework
-- **TypeScript**: Type-safe JavaScript
+### AI Integration
+- **Ollama**: Local AI model server
+- **Llama 3.1**: Large language model for intelligent assistance
+- **Chinese Language Support**: Native Chinese language processing
 
-## 📦 Installation
+## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
-- pip (Python package installer)
+- [Ollama](https://ollama.ai) (for AI features)
 
-### Setup
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/suma-lms.git
+cd suma-lms
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd Suma
-   ```
+### 2. Setup Environment
+```bash
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+# Install dependencies
+pip install -r requirements.txt
+```
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 3. Configure Environment
+```bash
+# Copy environment template
+cp env.example .env
 
-4. **Set up environment variables**
-   ```bash
-   cp env.example .env
-   # Edit .env with your configuration
-   ```
+# Edit .env file with your settings
+# OLLAMA_BASE_URL=http://localhost:11434
+# OLLAMA_MODEL=llama3.1:8b
+```
 
-5. **Initialize the database**
-   ```bash
-   python init_db.py
-   ```
+### 4. Setup Ollama (for AI features)
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
 
-6. **Start the development server**
-   ```bash
-   python -m app.main
-   ```
+# Start Ollama service
+ollama serve
+
+# Pull a model (in another terminal)
+ollama pull llama3.1:8b
+```
+
+### 5. Initialize Database
+```bash
+python init_db.py
+```
+
+### 6. Start the Server
+```bash
+python -m app.main
+```
 
 The API will be available at `http://localhost:8000`
 
@@ -84,6 +103,7 @@ The API will be available at `http://localhost:8000`
 Once the server is running, you can access:
 - **Interactive API docs**: http://localhost:8000/docs
 - **ReDoc documentation**: http://localhost:8000/redoc
+- **Health check**: http://localhost:8000/health
 
 ## 🔧 Configuration
 
@@ -100,8 +120,9 @@ SECRET_KEY=your-secret-key-here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-# OpenAI API (optional)
-OPENAI_API_KEY=your-openai-api-key-here
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.1:8b
 
 # File Upload
 UPLOAD_DIR=./uploads
@@ -111,49 +132,79 @@ MAX_FILE_SIZE=10485760  # 10MB
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
 ```
 
-### Default Accounts
+### Default Test Accounts
 
 After running `init_db.py`, you'll have these test accounts:
 
-- **Admin**: `admin` / `admin123`
-- **Teacher**: `teacher` / `teacher123`
-- **Students**: `student1`, `student2` / `student123`
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin123` |
+| Teacher | `teacher` | `teacher123` |
+| Student | `student1` | `student123` |
+| Student | `student2` | `student123` |
+
+## 🧪 Testing
+
+### Run API Tests
+```bash
+# Test all functionality
+python test_api_complete.py
+
+# Test Ollama connection
+python test_ollama.py
+
+# Test specific API endpoints
+python test_api.py
+```
+
+### Test AI Features
+```bash
+# Check AI status
+curl http://localhost:8000/ai/status
+
+# Test AI query (after login)
+curl -X POST "http://localhost:8000/ai/query" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "你好，请介绍一下我的学习进度"}'
+```
 
 ## 🏗️ Project Structure
 
 ```
 Suma/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI application
-│   ├── config.py            # Configuration settings
-│   ├── database.py          # Database connection
-│   ├── models.py            # SQLAlchemy models
-│   ├── schemas.py           # Pydantic schemas
-│   ├── auth.py              # Authentication logic
-│   ├── crud.py              # Database operations
-│   ├── utils.py             # Utility functions
-│   └── routers/             # API route handlers
-│       ├── __init__.py
-│       ├── auth.py          # Authentication endpoints
-│       ├── courses.py       # Course management
-│       ├── tasks.py         # Task management
-│       ├── calendar.py      # Calendar and events
-│       ├── ai.py            # AI assistant
-│       └── files.py         # File upload/download
-├── alembic/                 # Database migrations
-├── uploads/                 # File upload directory
-├── requirements.txt         # Python dependencies
-├── env.example             # Environment variables template
-├── init_db.py              # Database initialization
-└── README.md               # This file
+├── app/                    # Main application code
+│   ├── routers/           # API route handlers
+│   │   ├── auth.py        # Authentication endpoints
+│   │   ├── courses.py     # Course management
+│   │   ├── tasks.py       # Task management
+│   │   ├── calendar.py    # Calendar and events
+│   │   ├── ai.py          # AI assistant (Ollama)
+│   │   └── files.py       # File upload/download
+│   ├── models.py          # SQLAlchemy database models
+│   ├── schemas.py         # Pydantic data schemas
+│   ├── crud.py           # Database operations
+│   ├── auth.py           # Authentication logic
+│   ├── config.py         # Configuration settings
+│   ├── database.py       # Database connection
+│   ├── utils.py          # Utility functions
+│   └── main.py           # FastAPI application
+├── alembic/              # Database migrations
+├── uploads/              # File upload directory
+├── requirements.txt      # Python dependencies
+├── env.example          # Environment variables template
+├── init_db.py           # Database initialization
+├── test_*.py            # Test scripts
+├── OLLAMA_SETUP.md      # Ollama setup guide
+├── QUICKSTART.md        # Quick start guide
+└── README.md            # This file
 ```
 
-## 🔌 API Endpoints
+## 🔌 Key API Endpoints
 
 ### Authentication
 - `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
+- `POST /auth/login-json` - User login
 - `GET /auth/me` - Get current user info
 
 ### Courses
@@ -169,15 +220,17 @@ Suma/
 - `GET /tasks/{id}` - Get task details
 - `POST /tasks/{id}/submission` - Submit task
 
-### Calendar
-- `GET /calendar/events` - Get calendar events
-- `GET /calendar/export/ics` - Export calendar as .ics
-- `GET /calendar/dashboard` - Get dashboard data
-
 ### AI Assistant
+- `GET /ai/status` - Check AI assistant status
 - `POST /ai/query` - Query AI assistant
 - `GET /ai/dashboard-summary` - Get AI dashboard summary
 - `POST /ai/task-analysis` - Analyze task files
+- `GET /ai/study-tips` - Get personalized study tips
+
+### Calendar & Dashboard
+- `GET /calendar/events` - Get calendar events
+- `GET /calendar/export/ics` - Export calendar as .ics
+- `GET /calendar/dashboard` - Get dashboard data
 
 ### Files
 - `POST /files/upload` - Upload file
@@ -202,7 +255,20 @@ docker build -t suma-lms .
 docker run -p 8000:8000 suma-lms
 ```
 
+## 🤖 AI Features
+
+SUMA LMS includes a powerful AI assistant powered by Ollama:
+
+- **Local AI**: No external API keys required
+- **Chinese Support**: Native Chinese language processing
+- **Smart Suggestions**: Context-aware recommendations
+- **Task Analysis**: Analyze uploaded files and provide insights
+- **Learning Tips**: Personalized study strategies
+- **Progress Tracking**: AI-powered academic progress analysis
+
 ## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -212,36 +278,48 @@ docker run -p 8000:8000 suma-lms
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
 If you encounter any issues or have questions:
 
 1. Check the [API documentation](http://localhost:8000/docs)
-2. Review the [Issues](https://github.com/your-repo/issues) page
+2. Review the [Issues](https://github.com/your-username/suma-lms/issues) page
 3. Create a new issue with detailed information
+4. Check [OLLAMA_SETUP.md](OLLAMA_SETUP.md) for AI setup help
 
 ## 🔮 Roadmap
 
-### Phase 1 (Current)
+### Phase 1 ✅ (Current)
 - ✅ Backend API with core features
 - ✅ Database models and authentication
 - ✅ File upload/download system
-- ✅ AI assistant integration
+- ✅ Ollama AI assistant integration
+- ✅ Chinese language support
 
-### Phase 2 (Next)
+### Phase 2 🔄 (Next)
 - 🔄 Frontend with Next.js
 - 🔄 Real-time notifications
 - 🔄 Advanced calendar features
 - 🔄 Mobile app
 
-### Phase 3 (Future)
+### Phase 3 📋 (Future)
 - 📋 Video conferencing integration
 - 📋 Advanced analytics
 - 📋 Multi-language support
 - 📋 Plugin system
+- 📋 Advanced AI features
+
+## 🙏 Acknowledgments
+
+- [FastAPI](https://fastapi.tiangolo.com/) - The web framework
+- [Ollama](https://ollama.ai/) - Local AI model server
+- [SQLAlchemy](https://sqlalchemy.org/) - Database ORM
+- [Pydantic](https://pydantic.dev/) - Data validation
 
 ---
 
 **SUMA LMS** - Empowering Education Through Technology 🎓
+
+*Built with ❤️ for the future of learning*
