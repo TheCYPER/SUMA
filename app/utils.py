@@ -6,7 +6,7 @@ from app.schemas import UserRole, TaskType, TaskStatus
 
 
 def create_sample_data(db: Session):
-    """Create sample data for testing and development"""
+    """为测试和开发创建示例数据"""
     
     # Create sample users
     from app.auth import get_password_hash

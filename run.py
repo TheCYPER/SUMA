@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-SUMA LMS Server Runner
-This script starts the FastAPI development server
+SUMA LMS服务器运行器
+此脚本启动FastAPI开发服务器
 """
 
 import uvicorn
 import os
 import sys
 
-# Add the app directory to the Python path
+# 将应用目录添加到Python路径
 sys.path.append(os.path.dirname(__file__))
 
 if __name__ == "__main__":
-    print("🚀 Starting SUMA LMS API Server...")
-    print("📚 API Documentation: http://localhost:8000/docs")
-    print("📖 ReDoc Documentation: http://localhost:8000/redoc")
-    print("🔧 Health Check: http://localhost:8000/health")
+    print("🚀 正在启动SUMA LMS API服务器...")
+    print("📚 API文档: http://localhost:8000/docs")
+    print("📖 ReDoc文档: http://localhost:8000/redoc")
+    print("🔧 健康检查: http://localhost:8000/health")
     print("\n" + "="*50)
     
     uvicorn.run(

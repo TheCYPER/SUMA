@@ -13,7 +13,7 @@ from app.crud import (
 from app.models import User
 from ics import Calendar, Event as ICSEvent
 
-router = APIRouter(prefix="/calendar", tags=["calendar"])
+router = APIRouter(prefix="/calendar", tags=["日历"])
 
 
 @router.get("/events", response_model=List[CalendarEvent])

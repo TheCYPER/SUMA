@@ -1,45 +1,45 @@
 #!/usr/bin/env python3
 """
-Database initialization script for SUMA LMS
-Run this script to create the database and populate it with sample data
+SUMA LMS数据库初始化脚本
+运行此脚本创建数据库并填充示例数据
 """
 
 import sys
 import os
 
-# Add the app directory to the Python path
+# 将应用目录添加到Python路径
 sys.path.append(os.path.dirname(__file__))
 
 from app.database import SessionLocal, engine, Base
 from app.utils import create_sample_data
 
 def init_database():
-    """Initialize the database with tables and sample data"""
-    print("Initializing SUMA LMS database...")
+    """使用表和示例数据初始化数据库"""
+    print("正在初始化SUMA LMS数据库...")
     
-    # Create all tables
-    print("Creating database tables...")
+    # 创建所有表
+    print("正在创建数据库表...")
     Base.metadata.create_all(bind=engine)
-    print("✓ Database tables created")
+    print("✓ 数据库表创建完成")
     
-    # Create sample data
-    print("Creating sample data...")
+    # 创建示例数据
+    print("正在创建示例数据...")
     db = SessionLocal()
     try:
         create_sample_data(db)
-        print("✓ Sample data created")
+        print("✓ 示例数据创建完成")
     except Exception as e:
-        print(f"✗ Error creating sample data: {e}")
+        print(f"✗ 创建示例数据时出错: {e}")
         db.rollback()
     finally:
         db.close()
     
-    print("\n🎉 Database initialization complete!")
-    print("\nSample accounts created:")
-    print("  Admin: admin / admin123")
-    print("  Teacher: teacher / teacher123")
-    print("  Students: student1, student2 / student123")
-    print("\nYou can now start the API server with: python -m app.main")
+    print("\n🎉 数据库初始化完成！")
+    print("\n已创建的示例账户:")
+    print("  管理员: admin / admin123")
+    print("  教师: teacher / teacher123")
+    print("  学生: student1, student2 / student123")
+    print("\n现在可以使用以下命令启动API服务器: python -m app.main")
 
 if __name__ == "__main__":
     init_database()

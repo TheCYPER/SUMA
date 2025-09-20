@@ -15,7 +15,7 @@ from app.crud import (
 )
 from app.models import User
 
-router = APIRouter(prefix="/tasks", tags=["tasks"])
+router = APIRouter(prefix="/tasks", tags=["任务"])
 
 
 @router.get("/", response_model=List[Task])
@@ -24,7 +24,7 @@ async def read_user_tasks(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get current user's tasks"""
+    """获取当前用户的任务"""
     return get_user_tasks(db, current_user.id, days_ahead)
 
 
@@ -34,7 +34,7 @@ async def read_upcoming_tasks(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get upcoming tasks for current user"""
+    """获取当前用户即将到期的任务"""
     tasks = get_upcoming_tasks(db, current_user.id, days_ahead)
     upcoming_tasks = []
     
@@ -68,7 +68,7 @@ async def read_course_tasks(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get tasks for a specific course"""
+    """获取特定课程的任务"""
     return get_course_tasks(db, course_id)
 
 
@@ -78,12 +78,12 @@ async def read_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get a specific task with user's submission"""
+    """获取特定任务及用户提交内容"""
     task = get_task(db, task_id=task_id)
     if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=404, detail="任务未找到")
     
-    # Get user's submission for this task
+    # 获取用户对此任务的提交
     submission = get_task_submission(db, task_id, current_user.id)
     
     task_dict = task.__dict__.copy()
@@ -98,17 +98,17 @@ async def create_new_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_teacher_or_admin)
 ):
-    """Create a new task (teacher/admin only)"""
-    # Verify the user is the teacher of the course
+    """创建新任务（仅教师/管理员）"""
+    # 验证用户是否为该课程的教师
     from app.crud import get_course
     course = get_course(db, task.course_id)
     if not course:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="课程未找到")
     
     if course.teacher_id != current_user.id and current_user.role.value != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions to create tasks for this course"
+            detail="没有权限为此课程创建任务"
         )
     
     return create_task(db=db, task=task)

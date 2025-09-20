@@ -9,7 +9,7 @@ from app.crud import (
     create_course, update_course, enroll_user_in_course
 )
 
-router = APIRouter(prefix="/courses", tags=["courses"])
+router = APIRouter(prefix="/courses", tags=["课程"])
 
 
 @router.get("/", response_model=List[Course])
@@ -19,7 +19,7 @@ async def read_courses(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get all active courses"""
+    """获取所有活跃课程"""
     if current_user.role.value == "teacher":
         return get_teacher_courses(db, current_user.id)
     else:
@@ -32,7 +32,7 @@ async def read_all_courses(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    """Get all courses (public endpoint)"""
+    """获取所有课程（公开端点）"""
     return get_courses(db, skip=skip, limit=limit)
 
 
@@ -42,10 +42,10 @@ async def read_course(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get a specific course"""
+    """获取特定课程"""
     course = get_course(db, course_id=course_id)
     if course is None:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="课程未找到")
     return course
 
 
@@ -55,7 +55,7 @@ async def create_new_course(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_teacher_or_admin)
 ):
-    """Create a new course (teacher/admin only)"""
+    """创建新课程（仅教师/管理员）"""
     return create_course(db=db, course=course, teacher_id=current_user.id)
 
 
@@ -66,16 +66,16 @@ async def update_course_info(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_teacher_or_admin)
 ):
-    """Update course information (teacher/admin only)"""
+    """更新课程信息（仅教师/管理员）"""
     course = get_course(db, course_id=course_id)
     if course is None:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="课程未找到")
     
-    # Check if user is the teacher of this course or admin
+    # 检查用户是否为该课程的教师或管理员
     if course.teacher_id != current_user.id and current_user.role.value != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions to update this course"
+            detail="没有权限更新此课程"
         )
     
     return update_course(db=db, course_id=course_id, course_update=course_update)
@@ -87,19 +87,19 @@ async def enroll_in_course(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Enroll in a course"""
+    """注册课程"""
     course = get_course(db, course_id=course_id)
     if course is None:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="课程未找到")
     
     success = enroll_user_in_course(db, current_user.id, course_id)
     if not success:
         raise HTTPException(
             status_code=400,
-            detail="Already enrolled in this course"
+            detail="已注册此课程"
         )
     
-    return {"message": "Successfully enrolled in course"}
+    return {"message": "成功注册课程"}
 
 
 @router.get("/{course_id}/progress", response_model=CourseWithProgress)
@@ -108,23 +108,23 @@ async def get_course_progress(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get course progress for current user"""
+    """获取当前用户的课程进度"""
     course = get_course(db, course_id=course_id)
     if course is None:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="课程未找到")
     
-    # Get enrollment count
+    # 获取注册人数
     from app.models import Enrollment
     enrollment_count = db.query(Enrollment).filter(Enrollment.course_id == course_id).count()
     
-    # Get task count
+    # 获取任务数量
     from app.models import Task
     task_count = db.query(Task).filter(
         Task.course_id == course_id,
         Task.is_published == True
     ).count()
     
-    # Get completed tasks count
+    # 获取已完成任务数量
     from app.models import TaskSubmission
     completed_tasks = db.query(TaskSubmission).join(Task).filter(
         Task.course_id == course_id,

@@ -8,26 +8,26 @@ from app.config import settings
 from app.schemas import Token, User, UserCreate, LoginRequest
 from app.crud import create_user, get_user_by_username, get_user_by_email
 
-router = APIRouter(prefix="/auth", tags=["authentication"])
+router = APIRouter(prefix="/auth", tags=["认证"])
 
 
 @router.post("/register", response_model=User)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user"""
-    # Check if username already exists
+    """注册新用户"""
+    # 检查用户名是否已存在
     db_user = get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(
             status_code=400,
-            detail="Username already registered"
+            detail="用户名已注册"
         )
     
-    # Check if email already exists
+    # 检查邮箱是否已存在
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(
             status_code=400,
-            detail="Email already registered"
+            detail="邮箱已注册"
         )
     
     return create_user(db=db, user=user)
@@ -35,12 +35,12 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    """Login user and return access token"""
+    """用户登录并返回访问令牌"""
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="用户名或密码错误",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -54,18 +54,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
 @router.get("/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    """Get current user information"""
+    """获取当前用户信息"""
     return current_user
 
 
 @router.post("/login-json", response_model=Token)
 async def login_json(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Login user with JSON data and return access token"""
+    """使用JSON数据登录用户并返回访问令牌"""
     user = authenticate_user(db, login_data.username, login_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="用户名或密码错误",
             headers={"WWW-Authenticate": "Bearer"},
         )
     

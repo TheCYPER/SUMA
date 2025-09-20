@@ -13,7 +13,7 @@ from app.crud import get_task, get_task_submission, create_course_resource
 import aiofiles
 from PIL import Image
 
-router = APIRouter(prefix="/files", tags=["file-management"])
+router = APIRouter(prefix="/files", tags=["文件管理"])
 
 
 def get_file_extension(filename: str) -> str:

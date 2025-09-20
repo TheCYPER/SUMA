@@ -11,11 +11,11 @@ import ollama
 import requests
 import json
 
-router = APIRouter(prefix="/ai", tags=["ai-assistant"])
+router = APIRouter(prefix="/ai", tags=["AI助手"])
 
 # Test Ollama connection
 def test_ollama_connection() -> bool:
-    """Test if Ollama is running and accessible"""
+    """测试Ollama是否正在运行且可访问"""
     try:
         response = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=5)
         return response.status_code == 200
@@ -24,7 +24,7 @@ def test_ollama_connection() -> bool:
 
 
 async def get_ai_response(query: str, context: str = "", user_id: int = None, db: Session = None) -> AIResponse:
-    """Get AI response for user query using Ollama"""
+    """使用Ollama获取用户查询的AI响应"""
     
     # Check if Ollama is running
     if not test_ollama_connection():
@@ -97,7 +97,7 @@ async def get_ai_response(query: str, context: str = "", user_id: int = None, db
 
 
 def generate_suggestions(query: str, response: str) -> List[str]:
-    """Generate helpful suggestions based on the query and response"""
+    """根据查询和响应生成有用的建议"""
     suggestions = []
     
     query_lower = query.lower()
@@ -147,7 +147,7 @@ async def query_ai_assistant(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Query the AI assistant"""
+    """查询AI助手"""
     return await get_ai_response(
         query=query_data.query,
         context=query_data.context or "",
@@ -161,7 +161,7 @@ async def get_dashboard_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get AI-generated dashboard summary"""
+    """获取AI生成的仪表板摘要"""
     # Get user's data
     stats = get_dashboard_stats(db, current_user.id)
     upcoming_tasks = get_upcoming_tasks(db, current_user.id, 7)
@@ -194,7 +194,7 @@ async def analyze_task_file(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Analyze task files and provide AI insights"""
+    """分析任务文件并提供AI洞察"""
     from app.crud import get_task, get_task_submission
     
     # Get task information
@@ -238,7 +238,7 @@ async def get_study_tips(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    """Get personalized study tips"""
+    """获取个性化学习建议"""
     context = ""
     
     if course_id:
@@ -266,7 +266,7 @@ async def get_study_tips(
 
 @router.get("/status")
 async def get_ai_status():
-    """Check AI assistant status and available models"""
+    """检查AI助手状态和可用模型"""
     is_connected = test_ollama_connection()
     
     if not is_connected:

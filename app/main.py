@@ -5,19 +5,19 @@ from app.config import settings
 from app.database import engine, Base
 from app.routers import auth, courses, tasks, calendar, ai, files
 
-# Create database tables
+# 创建数据库表
 Base.metadata.create_all(bind=engine)
 
-# Create FastAPI app
+# 创建FastAPI应用
 app = FastAPI(
     title="SUMA LMS API",
-    description="Next-Generation Learning Management System API",
+    description="下一代学习管理系统API",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
+# 添加CORS中间件
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
@@ -26,13 +26,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Add trusted host middleware
+# 添加受信任主机中间件
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]  # Configure this properly for production
+    allowed_hosts=["*"]  # 生产环境中请正确配置
 )
 
-# Include routers
+# 包含路由
 app.include_router(auth.router)
 app.include_router(courses.router)
 app.include_router(tasks.router)
@@ -43,9 +43,9 @@ app.include_router(files.router)
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
+    """根端点"""
     return {
-        "message": "Welcome to SUMA LMS API",
+        "message": "欢迎使用SUMA LMS API",
         "version": "1.0.0",
         "docs": "/docs",
         "redoc": "/redoc"
@@ -54,19 +54,19 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "message": "SUMA LMS API is running"}
+    """健康检查端点"""
+    return {"status": "healthy", "message": "SUMA LMS API正在运行"}
 
 
-# Global exception handler
+# 全局异常处理器
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
-    return {"detail": "Resource not found"}
+    return {"detail": "资源未找到"}
 
 
 @app.exception_handler(500)
 async def internal_error_handler(request, exc):
-    return {"detail": "Internal server error"}
+    return {"detail": "内部服务器错误"}
 
 
 if __name__ == "__main__":
