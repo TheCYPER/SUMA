@@ -112,7 +112,7 @@ const Login: React.FC = () => {
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                测试账户：admin/admin123, teacher/teacher123, student1/student123
+                测试账户：student1/student123
               </p>
             </div>
           </form>
