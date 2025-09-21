@@ -1,75 +1,115 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from './ui/button';
 import {
-  HomeIcon,
-  BookOpenIcon,
-  ClipboardDocumentListIcon,
-  CalendarIcon,
-  ChatBubbleLeftRightIcon,
-  UserGroupIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/outline';
+  BookOpen,
+  Calculator,
+  Atom,
+  Code,
+  Globe,
+  Palette,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+const courses = [
+  { id: 1, name: "Mathematics", code: "MATH 301", icon: Calculator, color: "bg-blue-500", progress: 75 },
+  { id: 2, name: "Physics", code: "PHYS 201", icon: Atom, color: "bg-green-500", progress: 60 },
+  { id: 3, name: "Computer Science", code: "CS 350", icon: Code, color: "bg-purple-500", progress: 85 },
+  { id: 4, name: "History", code: "HIST 101", icon: Globe, color: "bg-orange-500", progress: 45 },
+  { id: 5, name: "Art", code: "ART 250", icon: Palette, color: "bg-pink-500", progress: 70 },
+];
+
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  const navigation = [
-    { name: '仪表板', href: '/', icon: HomeIcon },
-    { name: '课程', href: '/courses', icon: BookOpenIcon },
-    { name: '任务', href: '/tasks', icon: ClipboardDocumentListIcon },
-    { name: '日历', href: '/calendar', icon: CalendarIcon },
-    { name: 'AI助手', href: '/ai', icon: ChatBubbleLeftRightIcon },
-  ];
-
-  // 根据用户角色添加管理功能
-  if (user?.role === 'admin' || user?.role === 'teacher') {
-    navigation.push(
-      { name: '用户管理', href: '/users', icon: UserGroupIcon },
-      { name: '设置', href: '/settings', icon: Cog6ToothIcon }
-    );
-  }
-
   return (
-    <div className="w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen">
-      <div className="p-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">S</span>
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">SUMA</h2>
-            <p className="text-xs text-gray-500">学习管理系统</p>
-          </div>
+    <div
+      className={`bg-sidebar border-r border-sidebar-border transition-all duration-300 ${
+        collapsed ? "w-16" : "w-64"
+      } flex flex-col sticky top-0 h-screen`}
+    >
+      {/* Header */}
+      <div className="p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <span className="font-semibold text-sidebar-foreground min-w-0 truncate">
+                Beijing Etown Academy
+              </span>
+            </Link>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggle}
+            className="text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </Button>
         </div>
       </div>
-      
-      <nav className="mt-6">
-        <div className="px-3 space-y-1">
-          {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
+
+      {/* Courses */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        {!collapsed && <h3 className="text-sm font-medium text-sidebar-foreground mb-3">Courses</h3>}
+        <div className="space-y-2">
+          {courses.map((course) => {
+            const Icon = course.icon;
             return (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                  isActive
-                    ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <item.icon
-                  className={`mr-3 h-5 w-5 ${
-                    isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-500'
+              <Link key={course.id} to={`/course/${course.id}`}>
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent ${
+                    collapsed ? "px-2" : "px-3"
                   }`}
-                />
-                {item.name}
+                >
+                  <div
+                    className={`w-6 h-6 rounded-md ${course.color} flex items-center justify-center mr-3 flex-shrink-0`}
+                  >
+                    <Icon className="w-3 h-3 text-white" />
+                  </div>
+                  {!collapsed && (
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="text-sm truncate">
+                        {course.name} <span className="text-xs text-muted-foreground">({course.code})</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">{course.progress}% complete</div>
+                    </div>
+                  )}
+                </Button>
               </Link>
             );
           })}
         </div>
-      </nav>
+
+        {!collapsed && (
+          <>
+            <h3 className="text-sm font-medium text-sidebar-foreground mb-3 mt-6">Resources</h3>
+            <div className="space-y-2">
+              <Button variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <FileText className="w-4 h-4 mr-3" />
+                Textbooks
+              </Button>
+              <Button variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <BookOpen className="w-4 h-4 mr-3" />
+                Study Guides
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

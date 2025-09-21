@@ -1,52 +1,70 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Search, Bell, Settings, User, LogOut } from 'lucide-react';
 
-const Header: React.FC = () => {
+export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900">SUMA LMS</h1>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {/* 通知按钮 */}
-            <button className="p-2 text-gray-400 hover:text-gray-500 relative">
-              <BellIcon className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-            </button>
-            
-            {/* 用户菜单 */}
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.full_name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-              </div>
-              <div className="relative">
-                <button className="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
-                  <UserCircleIcon className="w-8 h-8" />
-                </button>
-                
-                {/* 下拉菜单 */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    退出登录
-                  </button>
-                </div>
-              </div>
-            </div>
+    <div className="bg-card border-b border-border px-6 py-4">
+      <div className="flex items-center justify-between">
+        {/* Search */}
+        <div className="flex-1 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input placeholder="Search courses, tasks, or resources..." className="pl-10 bg-muted border-0" />
           </div>
         </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-4">
+          {/* Notifications */}
+          <Button variant="ghost" size="sm" className="relative">
+            <Bell className="w-4 h-4" />
+            <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-xs bg-destructive">
+              3
+            </Badge>
+          </Button>
+
+          {/* Settings */}
+          <Button variant="ghost" size="sm">
+            <Settings className="w-4 h-4" />
+          </Button>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/student-avatar.png" alt="Student" />
+                  <AvatarFallback>{user?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-    </header>
+    </div>
   );
 };
 
-export default Header;
+export default Navbar;

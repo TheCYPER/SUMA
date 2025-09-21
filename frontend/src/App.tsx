@@ -5,6 +5,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import CoursePage from './pages/CoursePage';
+import TaskPage from './pages/TaskPage';
 
 // 创建React Query客户端
 const queryClient = new QueryClient({
@@ -23,7 +25,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -38,7 +40,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -69,8 +71,8 @@ const AppContent: React.FC = () => {
               <Layout>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/courses" element={<div>课程页面（开发中）</div>} />
-                  <Route path="/tasks" element={<div>任务页面（开发中）</div>} />
+                  <Route path="/course/:id" element={<CoursePage />} />
+                  <Route path="/task/:id" element={<TaskPage />} />
                   <Route path="/calendar" element={<div>日历页面（开发中）</div>} />
                   <Route path="/ai" element={<div>AI助手页面（开发中）</div>} />
                   <Route path="/users" element={<div>用户管理页面（开发中）</div>} />

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { BookOpen, Loader2 } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const Login: React.FC = () => {
@@ -37,78 +41,83 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-12 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+            <BookOpen className="w-6 h-6 text-primary-foreground" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-foreground">
             登录到 SUMA LMS
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          </CardTitle>
+          <p className="text-muted-foreground">
             下一代学习管理系统
           </p>
-        </div>
+        </CardHeader>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+        <CardContent>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="username" className="text-sm font-medium text-foreground">
                 用户名
               </label>
-              <input
+              <Input
                 id="username"
                 name="username"
                 type="text"
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="input mt-1"
                 placeholder="请输入用户名"
+                className="bg-background border-border text-foreground"
               />
             </div>
             
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-foreground">
                 密码
               </label>
-              <input
+              <Input
                 id="password"
                 name="password"
                 type="password"
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="input mt-1"
                 placeholder="请输入密码"
+                className="bg-background border-border text-foreground"
               />
             </div>
-          </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
+            {error && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
 
-          <div>
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="btn btn-primary w-full flex justify-center items-center"
+              className="w-full"
             >
-              {isLoading ? <LoadingSpinner size="sm" /> : '登录'}
-            </button>
-          </div>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  登录中...
+                </>
+              ) : (
+                '登录'
+              )}
+            </Button>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              测试账户：admin/admin123, teacher/teacher123, student1/student123
-            </p>
-          </div>
-        </form>
-      </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                测试账户：admin/admin123, teacher/teacher123, student1/student123
+              </p>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
