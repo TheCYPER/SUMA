@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Backend API
   suma-lms:
     build: .
     ports:
@@ -10,11 +11,28 @@ services:
       - SECRET_KEY=your-secret-key-change-in-production
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_MODEL=llama3.1:8b
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://frontend:3000
+      - FRONTEND_URL=http://localhost:3000
+      - ENVIRONMENT=development
+      - DEBUG=true
     volumes:
       - ./uploads:/app/uploads
       - ./suma.db:/app/suma.db
     depends_on:
       - ollama
+    restart: unless-stopped
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - suma-lms
     restart: unless-stopped
 
   ollama:

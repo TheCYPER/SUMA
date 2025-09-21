@@ -20,8 +20,20 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
     max_file_size: int = 10485760  # 10MB
     
-    # 跨域配置
-    allowed_origins: List[str] = ["http://localhost:3000", "http://localhost:3001"]
+    # 跨域配置 - 支持React前端
+    allowed_origins: List[str] = [
+        "http://localhost:3000",  # React dev server
+        "http://localhost:3001",  # Alternative port
+        "http://127.0.0.1:3000",  # Alternative localhost
+        "http://127.0.0.1:3001",  # Alternative localhost
+    ]
+    
+    # 前端配置
+    frontend_url: str = "http://localhost:3000"
+    
+    # 环境配置
+    environment: str = "development"  # development, production
+    debug: bool = True
     
     class Config:
         env_file = ".env"

@@ -12,10 +12,11 @@ Base.metadata.create_all(bind=engine)
 # 创建FastAPI应用
 app = FastAPI(
     title="SUMA LMS API",
-    description="下一代学习管理系统API",
+    description="Next-Generation Learning Management System API",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc"
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
 )
 
 # 添加CORS中间件
@@ -33,30 +34,37 @@ app.add_middleware(
     allowed_hosts=["*"]  # 生产环境中请正确配置
 )
 
-# 包含路由
-app.include_router(auth.router)
-app.include_router(courses.router)
-app.include_router(tasks.router)
-app.include_router(calendar.router)
-app.include_router(ai_router)  # 使用新的多智能体AI路由
-app.include_router(files.router)
+# 包含路由 - 添加API版本前缀
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(courses.router, prefix="/api/v1")
+app.include_router(tasks.router, prefix="/api/v1")
+app.include_router(calendar.router, prefix="/api/v1")
+app.include_router(ai_router, prefix="/api/v1")  # 使用新的多智能体AI路由
+app.include_router(files.router, prefix="/api/v1")
 
 
 @app.get("/")
 async def root():
     """根端点"""
     return {
-        "message": "欢迎使用SUMA LMS API",
+        "message": "Welcome to SUMA LMS API",
         "version": "1.0.0",
-        "docs": "/docs",
-        "redoc": "/redoc"
+        "docs": "/api/docs",
+        "redoc": "/api/redoc",
+        "frontend": settings.frontend_url
     }
 
 
 @app.get("/health")
 async def health_check():
     """健康检查端点"""
-    return {"status": "healthy", "message": "SUMA LMS API正在运行"}
+    return {"status": "healthy", "message": "SUMA LMS API is running"}
+
+
+@app.get("/api/health")
+async def api_health_check():
+    """API健康检查端点"""
+    return {"status": "healthy", "message": "SUMA LMS API is running"}
 
 
 # 全局异常处理器

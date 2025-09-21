@@ -1,9 +1,10 @@
 # SUMA - Next-Generation Learning Management System
 
-SUMA is a modern, AI-powered Learning Management System built with FastAPI and Ollama, designed to provide an intuitive and efficient learning experience for students and teachers.
+SUMA is a modern, AI-powered Learning Management System built with FastAPI and React, designed to provide an intuitive and efficient learning experience for students and teachers.
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org)
 [![Ollama](https://img.shields.io/badge/Ollama-AI%20Powered-purple.svg)](https://ollama.ai)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -31,30 +32,43 @@ SUMA is a modern, AI-powered Learning Management System built with FastAPI and O
 ### Backend
 - **FastAPI**: Modern, fast web framework for building APIs
 - **SQLAlchemy**: SQL toolkit and ORM
-- **SQLite**: Lightweight database (easily upgradeable to PostgreSQL)
+- **SQLite/PostgreSQL**: Database support
 - **Alembic**: Database migration tool
 - **Ollama**: Local AI model integration
 - **JWT**: Secure authentication
 - **Pydantic**: Data validation and settings management
 
+### Frontend
+- **React 18**: Modern frontend framework
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool
+- **Tailwind CSS**: Utility-first CSS framework
+- **React Router**: Client-side routing
+- **Axios**: HTTP client
+- **React Query**: Data fetching and caching
+
 ### AI Integration
 - **Ollama**: Local AI model server
-- **Llama 3.1**: Large language model for intelligent assistance
-- **Chinese Language Support**: Native Chinese language processing
+- **Multi-Agent System**: Specialized AI agents for different educational needs
+- **Chinese/English Support**: Bilingual AI responses
+- **Educational Guardrails**: Prevents academic misconduct
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
+- Node.js 18+
 - [Ollama](https://ollama.ai) (for AI features)
 
-### 1. Clone the Repository
+### Backend Setup
+
+1. **Clone the Repository**
 ```bash
 git clone https://github.com/your-username/suma-lms.git
 cd suma-lms
 ```
 
-### 2. Setup Environment
+2. **Setup Python Environment**
 ```bash
 # Create virtual environment
 python -m venv .venv
@@ -64,7 +78,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment
+3. **Configure Environment**
 ```bash
 # Copy environment template
 cp env.example .env
@@ -74,7 +88,7 @@ cp env.example .env
 # OLLAMA_MODEL=llama3.1:8b
 ```
 
-### 4. Setup Ollama (for AI features)
+4. **Setup Ollama (for AI features)**
 ```bash
 # Install Ollama
 curl -fsSL https://ollama.ai/install.sh | sh
@@ -86,55 +100,37 @@ ollama serve
 ollama pull llama3.1:8b
 ```
 
-### 5. Initialize Database
+5. **Initialize Database**
 ```bash
 python init_db.py
 ```
 
-### 6. Start the Server
+6. **Start Backend Server**
 ```bash
 python -m app.main
 ```
 
-The API will be available at `http://localhost:8000`
+### Frontend Setup
 
-## 📚 API Documentation
-
-Once the server is running, you can access:
-- **Interactive API docs**: http://localhost:8000/docs
-- **ReDoc documentation**: http://localhost:8000/redoc
-- **Health check**: http://localhost:8000/health
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env` file with the following variables:
-
-```env
-# Database
-DATABASE_URL=sqlite:///./suma.db
-
-# Security
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# Ollama Configuration
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.1:8b
-
-# File Upload
-UPLOAD_DIR=./uploads
-MAX_FILE_SIZE=10485760  # 10MB
-
-# CORS
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+1. **Install Dependencies**
+```bash
+cd frontend
+npm install
 ```
 
-### Default Test Accounts
+2. **Start Development Server**
+```bash
+npm run dev
+```
 
-After running `init_db.py`, you'll have these test accounts:
+The application will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+## 🔑 Test Accounts
+
+After initialization, use these accounts:
 
 | Role | Username | Password |
 |------|----------|----------|
@@ -143,34 +139,18 @@ After running `init_db.py`, you'll have these test accounts:
 | Student | `student1` | `student123` |
 | Student | `student2` | `student123` |
 
-## 🧪 Testing
+## 📚 API Documentation
 
-### Run API Tests
-```bash
-# Test all functionality
-python test_ai_system.py
-
-# Test specific API endpoints
-python test_api.py
-```
-
-### Test AI Features
-```bash
-# Check AI status
-curl http://localhost:8000/ai/status
-
-# Test AI query (after login)
-curl -X POST "http://localhost:8000/ai/query" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "你好，请介绍一下我的学习进度"}'
-```
+Once the server is running, you can access:
+- **Interactive API docs**: http://localhost:8000/docs
+- **ReDoc documentation**: http://localhost:8000/redoc
+- **Health check**: http://localhost:8000/health
 
 ## 🏗️ Project Structure
 
 ```
 Suma/
-├── app/                    # Main application code
+├── app/                    # Backend application
 │   ├── routers/           # API route handlers
 │   │   ├── auth.py        # Authentication endpoints
 │   │   ├── courses.py     # Course management
@@ -186,14 +166,24 @@ Suma/
 │   ├── database.py       # Database connection
 │   ├── utils.py          # Utility functions
 │   └── main.py           # FastAPI application
+├── frontend/              # React frontend
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── pages/         # Page components
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── services/      # API services
+│   │   ├── utils/         # Utility functions
+│   │   └── types/         # TypeScript types
+│   ├── public/            # Static assets
+│   └── package.json       # Frontend dependencies
 ├── alembic/              # Database migrations
 ├── uploads/              # File upload directory
 ├── requirements.txt      # Python dependencies
 ├── env.example          # Environment variables template
 ├── init_db.py           # Database initialization
 ├── test_*.py            # Test scripts
-├── AI_USAGE_GUIDE.md    # AI usage guide
-├── QUICKSTART.md        # Quick start guide
+├── Dockerfile           # Container configuration
+├── docker-compose.yml   # Multi-container setup
 └── README.md            # This file
 ```
 
@@ -234,34 +224,88 @@ Suma/
 - `GET /files/download/{path}` - Download file
 - `GET /files/preview/{path}` - Preview file
 
-## 🚀 Deployment
-
-### Development
-```bash
-python -m app.main
-```
-
-### Production
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-### Docker (Coming Soon)
-```bash
-docker build -t suma-lms .
-docker run -p 8000:8000 suma-lms
-```
-
 ## 🤖 AI Features
 
 SUMA LMS includes a powerful AI assistant powered by Ollama:
 
 - **Local AI**: No external API keys required
-- **Chinese Support**: Native Chinese language processing
+- **Multi-Agent System**: Specialized agents for different educational needs
+- **Educational Guardrails**: Prevents academic misconduct
+- **Chinese/English Support**: Bilingual AI responses
 - **Smart Suggestions**: Context-aware recommendations
 - **Task Analysis**: Analyze uploaded files and provide insights
 - **Learning Tips**: Personalized study strategies
 - **Progress Tracking**: AI-powered academic progress analysis
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+# Test all functionality
+python test_ai_system.py
+
+# Test specific API endpoints
+python test_api.py
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
+
+## 🚀 Deployment
+
+### Development
+```bash
+# Backend
+python -m app.main
+
+# Frontend
+cd frontend && npm run dev
+```
+
+### Production with Docker
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Initialize database
+docker-compose exec suma-lms python init_db.py
+```
+
+### Cloud Deployment
+- **Railway**: Connect GitHub repository and deploy
+- **Render**: Web service with automatic builds
+- **Heroku**: Traditional PaaS deployment
+- **Vercel**: Frontend deployment with serverless functions
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# Database
+DATABASE_URL=sqlite:///./suma.db
+
+# Security
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.1:8b
+
+# File Upload
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=10485760  # 10MB
+
+# CORS
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+```
 
 ## 🤝 Contributing
 
@@ -284,7 +328,6 @@ If you encounter any issues or have questions:
 1. Check the [API documentation](http://localhost:8000/docs)
 2. Review the [Issues](https://github.com/your-username/suma-lms/issues) page
 3. Create a new issue with detailed information
-4. Check [AI_USAGE_GUIDE.md](AI_USAGE_GUIDE.md) for AI usage help
 
 ## 🔮 Roadmap
 
@@ -293,17 +336,17 @@ If you encounter any issues or have questions:
 - ✅ Database models and authentication
 - ✅ File upload/download system
 - ✅ Ollama AI assistant integration
-- ✅ Chinese language support
+- ✅ React frontend with TypeScript
 
 ### Phase 2 🔄 (Next)
-- 🔄 Frontend with Next.js
-- 🔄 Real-time notifications
+- 🔄 Real-time notifications with WebSocket
 - 🔄 Advanced calendar features
-- 🔄 Mobile app
+- 🔄 Mobile app with React Native
+- 🔄 Advanced AI capabilities
 
 ### Phase 3 📋 (Future)
 - 📋 Video conferencing integration
-- 📋 Advanced analytics
+- 📋 Advanced analytics dashboard
 - 📋 Multi-language support
 - 📋 Plugin system
 - 📋 Advanced AI features
@@ -311,6 +354,7 @@ If you encounter any issues or have questions:
 ## 🙏 Acknowledgments
 
 - [FastAPI](https://fastapi.tiangolo.com/) - The web framework
+- [React](https://reactjs.org/) - The frontend framework
 - [Ollama](https://ollama.ai/) - Local AI model server
 - [SQLAlchemy](https://sqlalchemy.org/) - Database ORM
 - [Pydantic](https://pydantic.dev/) - Data validation
